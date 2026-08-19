@@ -10,14 +10,45 @@ class Workshop extends Phaser.Scene {
 
         this.tinkerer = new NPC(this, 400, 300, 'merchant', 'Tinkerer', [
             'Welcome to the Workshop! I am the Tinkerer.',
-            'Omarchy has 22 themes: Catppuccin, Gruvbox, Nord, Tokyo Night, Rose Pine, and more.',
-            'Each theme colors your terminal, editor, bar, and apps consistently.',
-            'The Bar can be positioned top, bottom, left, or right. Toggle with Super+Shift+Space.',
-            'Widgets in the bar: Menu, Workspaces, Clock, Weather, Audio, Bluetooth, Network, Power.',
-            'Click bar widgets for popups - Audio for volume, Clock for calendar, Network for Wi-Fi.',
-            'Plugins extend Omarchy. Install with: omarchy plugin add <git-url>',
-            'Clone a built-in plugin to customize it: omarchy plugin clone <id>',
-            'The Menu (Super+Space) has Install, Style, Setup, and System sections.'
+            '22 built-in themes: Tokyo Night, Catppuccin, Gruvbox,',
+            'Nord, Rose Pine, Ethereal, Everforest, Hackerman,',
+            'Osaka Jade, Kanagawa, Lumon, Miasma, Matte Black,',
+            'Vantablack, Ristretto, Retro 82, Flexoki Light,',
+            'Catppuccin Latte, White, and more at omarchy.org/themes.',
+            'Each theme styles: desktop, terminal, neovim, btop,',
+            'Chromium, bar, menu, notifications, lock screen.',
+            'Custom backgrounds per theme in ~/.config/omarchy/backgrounds/.',
+            'More themes at omarchy.org/themes/'
+        ]);
+
+        // Shell Tools NPC
+        const shellNpc = new NPC(this, 1400, 300, 'elder', 'Shell Master', [
+            'SHELL TOOLS included in Omarchy:',
+            'fzf (ff): fuzzy find files with preview.',
+            'Ctrl+R: fuzzy search command history.',
+            'Zoxide: smart cd that remembers directories.',
+            'ripgrep (rg): fast content search.',
+            'eza: enhanced ls with icons (ls, lt, lsa, lta).',
+            'fd: easier find replacement.',
+            'bat: cat with syntax highlighting.',
+            'tldr: concise man page examples.',
+            'yt-dlp: download video from YouTube.',
+            'try: date-stamped experiment dirs in ~/Work/tries.'
+        ]);
+
+        // Bar & Widgets NPC
+        const barNpc = new NPC(this, 900, 500, 'blacksmith', 'Bar Master', [
+            'THE BAR can be top, bottom, left, or right.',
+            'Super+Shift+Space toggles bar visibility.',
+            'Widgets: Menu, Workspaces, Clock, Weather, Audio,',
+            'Bluetooth, Network, Power, Display, Tray, Media.',
+            'Click Clock for calendar. Right-click to cycle format.',
+            'Click Audio for volume panel. Scroll for volume.',
+            'Click Weather for forecast popup.',
+            'Click Media for play/pause. Scroll for next/prev.',
+            'Configure in ~/.config/omarchy/shell.json.',
+            'omarchy bar position bottom/left/right/top.',
+            'omarchy bar defaults resets to shipped layout.'
         ]);
 
         this.player = new Player(this, 960, 700);

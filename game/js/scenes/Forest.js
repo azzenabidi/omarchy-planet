@@ -78,12 +78,26 @@ class Forest extends Phaser.Scene {
 
     createSignposts() {
         const signData = [
-            { x: 960, y: 150, text: 'Super+Return: Open Terminal\nSuper+Shift+Return: Open Browser\nSuper+Shift+F: File Manager' },
-            { x: 960, y: 280, text: 'Super+Space: Omarchy Menu\nSuper+Alt+Space: Apps Menu\nSuper+Escape: System Menu' },
-            { x: 960, y: 410, text: 'Super+C/V/X: Universal Copy/Paste/Cut\nSuper+Ctrl+V: Clipboard Manager\nSuper+Ctrl+E: Emoji Picker' },
-            { x: 960, y: 540, text: 'Print: Screenshot\nAlt+Print: Screen Record\nSuper+Alt+Print: Color Picker\nSuper+Ctrl+Print: OCR Text Extract' },
-            { x: 960, y: 670, text: 'Super+K: Keybindings Help\nSuper+Ctrl+Q: Calculator\nSuper+Ctrl+L: Lock Screen\nSuper+Ctrl+N: Night Light' },
-            { x: 960, y: 800, text: 'Super+Ctrl+A: Audio Panel\nSuper+Ctrl+B: Bluetooth Panel\nSuper+Ctrl+D: Display Panel\nSuper+Ctrl+W: Network Panel\nSuper+Ctrl+P: Power Panel' },
+            // Launching Apps
+            { x: 960, y: 150, text: 'LAUNCHING APPS:\nSuper+Return: Terminal\nSuper+Alt+Return: Tmux terminal\nSuper+Shift+Return: Browser\nSuper+Shift+Alt+B: Incognito browser\nSuper+Shift+F: File Manager\nSuper+Shift+N: Neovim' },
+
+            // More Apps
+            { x: 960, y: 280, text: 'MORE APPS:\nSuper+Shift+M: Music (Spotify)\nSuper+Shift+Alt+M: Music (cliamp)\nSuper+Shift+D: Docker (LazyDocker)\nSuper+Shift+O: Obsidian\nSuper+Shift+X: X (Twitter)\nSuper+Shift+Y: YouTube\nSuper+Shift+S: Google Maps' },
+
+            // AI & Communication
+            { x: 960, y: 410, text: 'AI & COMMUNICATION:\nSuper+Shift+A: AI (ChatGPT)\nSuper+Shift+Alt+A: AI (Grok)\nSuper+Shift+G: Signal\nSuper+Shift+Alt+G: WhatsApp\nSuper+Shift+Ctrl+G: Messenger\nSuper+Shift+E: Email (HEY)\nSuper+Shift+C: Calendar (HEY)' },
+
+            // Clipboard & Input
+            { x: 960, y: 540, text: 'CLIPBOARD & INPUT:\nSuper+C: Copy\nSuper+X: Cut\nSuper+V: Paste\nSuper+Ctrl+V: Clipboard history\nSuper+Ctrl+E: Emoji picker\nSuper+Ctrl+Q: Calculator\nCapsLock+Space+Space: Em dash' },
+
+            // Screenshots & Recording
+            { x: 960, y: 670, text: 'SCREENSHOTS & RECORDING:\nPrint: Screenshot\nAlt+Print: Screen record (start/stop)\nSuper+Print: Color picker\nSuper+Ctrl+Print: OCR text extract\nSuper+Ctrl+X: Start/stop dictation\nF9: Push-to-talk dictation\nSuper+Ctrl+C: Capture menu' },
+
+            // Notifications & Reminders
+            { x: 960, y: 800, text: 'NOTIFICATIONS & REMINDERS:\nSuper+,: Dismiss notification\nSuper+Shift+,: Dismiss all\nSuper+Ctrl+,: Silence notifications\nSuper+Alt+,: Invoke last notification\nSuper+Ctrl+R: Set reminder\nSuper+Ctrl+Alt+R: See all reminders\nSuper+Ctrl+Shift+R: Clear all reminders' },
+
+            // System Panels
+            { x: 960, y: 930, text: 'SYSTEM PANELS:\nSuper+Ctrl+A: Audio\nSuper+Ctrl+W: Network/WiFi\nSuper+Ctrl+B: Bluetooth\nSuper+Ctrl+D: Display\nSuper+Ctrl+P: Power\nSuper+Ctrl+Alt+D: Calendar\nSuper+Ctrl+T: Activity monitor (btop)' }
         ];
 
         signData.forEach(data => {

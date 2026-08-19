@@ -10,13 +10,37 @@ class SettingsCave extends Phaser.Scene {
 
         this.guard = new NPC(this, 960, 350, 'blacksmith', 'Cave Guard', [
             'Halt! This is the Cave of Settings.',
-            'Here you can configure every aspect of your Omarchy system.',
-            'Click the entrance below to open the Display settings panel.',
-            'From the Omarchy Menu (Super+Space), you can access all settings:',
-            'Monitors, Keybindings, Input, Network DNS, Default apps,',
-            'Plugins, Security (fingerprint/FIDO2), and Hyprland config.',
-            'Use Super+Ctrl+D for Display, Super+Ctrl+A for Audio,',
-            'Super+Ctrl+B for Bluetooth, Super+Ctrl+W for Network.'
+            'Here you can configure every aspect of your system.',
+            'Click the entrance to open Display settings.',
+            'From Super+Space menu, access all settings:',
+            'Monitors, Keybindings, Input, Network DNS,',
+            'Default apps, Plugins, Security, and Hyprland config.'
+        ]);
+
+        // Network & System NPC
+        const networker = new NPC(this, 400, 500, 'merchant', 'Network Keeper', [
+            'NETWORKING: NetworkManager backend.',
+            'Super+Ctrl+W opens WiFi panel.',
+            'nmtui for terminal network management.',
+            'omarchy network password <iface> prints WiFi password.',
+            'omarchy network speedtest down/up for speed tests.',
+            'omarchy dns to see/set DNS (Cloudflare, Google, Custom).',
+            'WiFi QR sharing: Setup > Network > QR Code.',
+            'Firewall on by default, blocks incoming traffic.',
+            'Tailscale available: Install > Service > Tailscale.'
+        ]);
+
+        // Monitor & Display NPC
+        const displayKeeper = new NPC(this, 1500, 500, 'elder', 'Display Keeper', [
+            'MONITORS: Auto-extend on connect.',
+            'Super+/ steps monitor scaling up (1x/1.25x/1.6x/2x/3x/4x).',
+            'Super+Alt+/ steps scaling down.',
+            'omarchy display text size <9-20> adjusts text.',
+            'Brightness keys adjust display brightness.',
+            'Shift+Brightness for max/min. Alt+Brightness for 1%.',
+            'Config: ~/.config/hypr/monitors.lua',
+            'Laptop display: Super+Ctrl+Delete toggles on/off.',
+            'Mirror displays: Super+Ctrl+Alt+Delete.'
         ]);
 
         this.player = new Player(this, 960, 100);
