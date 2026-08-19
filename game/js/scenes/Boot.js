@@ -4,8 +4,7 @@ class Boot extends Phaser.Scene {
     }
 
     preload() {
-        // Load dialog data from CSV
-        this.load.script('dialogData', 'js/systems/DialogData.js');
+        // DialogData.js is already loaded via index.html script tag
     }
 
     create() {
