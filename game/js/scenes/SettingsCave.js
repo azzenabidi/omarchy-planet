@@ -15,7 +15,7 @@ class SettingsCave extends Phaser.Scene {
             'From Super+Space menu, access all settings:',
             'Monitors, Keybindings, Input, Network DNS,',
             'Default apps, Plugins, Security, and Hyprland config.'
-        ]);
+        ], 'Settings explored! Return to the Village or visit the Workshop.');
 
         // Network & System NPC
         const networker = new NPC(this, 400, 500, 'merchant', 'Network Keeper', [
@@ -28,7 +28,7 @@ class SettingsCave extends Phaser.Scene {
             'WiFi QR sharing: Setup > Network > QR Code.',
             'Firewall on by default, blocks incoming traffic.',
             'Tailscale available: Install > Service > Tailscale.'
-        ]);
+        ], 'Network configured! Head to the Workshop to explore tools and themes.');
 
         // Monitor & Display NPC
         const displayKeeper = new NPC(this, 1500, 500, 'elder', 'Display Keeper', [
@@ -41,7 +41,7 @@ class SettingsCave extends Phaser.Scene {
             'Config: ~/.config/hypr/monitors.lua',
             'Laptop display: Super+Ctrl+Delete toggles on/off.',
             'Mirror displays: Super+Ctrl+Alt+Delete.'
-        ]);
+        ], 'Display mastered! Return to the Village to continue your journey.');
 
         this.player = new Player(this, 960, 100);
         this.dialog = new Dialog(this);

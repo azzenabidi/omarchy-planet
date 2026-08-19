@@ -1,9 +1,11 @@
 class NPC {
-    constructor(scene, x, y, texture, name, dialogLines) {
+    constructor(scene, x, y, texture, name, dialogLines, recommendation) {
         this.scene = scene;
         this.name = name;
         this.dialogLines = dialogLines;
+        this.recommendation = recommendation || null;
         this.currentLine = 0;
+        this.isTalking = false;
 
         this.sprite = scene.physics.add.sprite(x, y, texture);
         this.sprite.setOrigin(0.5, 0.5);
@@ -42,15 +44,44 @@ class NPC {
     }
 
     talk() {
+        // If dialog is open from this NPC, advance it
+        if (this.scene.dialog && this.scene.dialog.isOpen && this.isTalking) {
+            this.scene.dialog.advance();
+            return;
+        }
+
+        // If dialog is open from someone else, ignore
         if (this.scene.dialog && this.scene.dialog.isOpen) {
             return;
         }
 
-        const line = this.dialogLines[this.currentLine % this.dialogLines.length];
+        // If we've shown all lines, show recommendation then reset
+        if (this.currentLine >= this.dialogLines.length) {
+            if (this.recommendation) {
+                this.scene.dialog.show(this.name, this.recommendation, () => {
+                    this.isTalking = false;
+                });
+                this.isTalking = true;
+                // Reset after recommendation
+                this.currentLine = 0;
+            }
+            return;
+        }
+
+        // Show next line in sequence
+        const line = this.dialogLines[this.currentLine];
         this.currentLine++;
+        this.isTalking = true;
+
+        // If this was the last regular line and there's a recommendation,
+        // prepare to show it on next click
+        const isLastLine = this.currentLine >= this.dialogLines.length;
 
         if (this.scene.dialog) {
-            this.scene.dialog.show(this.name, line);
+            this.scene.dialog.show(this.name, line, () => {
+                this.isTalking = false;
+                // If it was the last line, next click will show recommendation
+            });
         }
     }
 

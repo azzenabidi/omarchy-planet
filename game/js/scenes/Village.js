@@ -25,7 +25,7 @@ class Village extends Phaser.Scene {
             'Super+G toggles window grouping. Grouped windows share tile space.',
             'Super+Alt+Tab cycles windows within a group.',
             'Super+Ctrl+Left/Right moves between grouped windows.'
-        ]);
+        ], 'You now know navigation! Head to the Forest to learn all keybinds.');
 
         // Blacksmith Tiling - Window Management
         const blacksmith = new NPC(this, 960, 400, 'blacksmith', 'Blacksmith Tiling', [
@@ -51,7 +51,7 @@ class Village extends Phaser.Scene {
             'Ctrl+Alt+Tab cycles focus through monitors.',
             'Super+Ctrl+Delete toggles laptop display on/off.',
             'Super+Ctrl+Alt+Delete mirrors displays.'
-        ]);
+        ], 'Window mastery complete! Visit the Cave to configure your system.');
 
         // Merchant Theme - Themes, Style & System
         const merchant = new NPC(this, 1500, 300, 'merchant', 'Merchant Theme', [
@@ -71,7 +71,7 @@ class Village extends Phaser.Scene {
             'Super+Ctrl+, toggles notification silencing.',
             'Super+Ctrl+R sets a reminder. Super+Ctrl+Alt+R sees all.',
             'Super+Ctrl+Alt+T shows time. Super+Ctrl+Alt+B shows battery.'
-        ]);
+        ], 'Style and system mastered! Check out the Workshop for tools and themes.');
 
         this.npcs = [elder, blacksmith, merchant];
         this.player = new Player(this, 960, 700);

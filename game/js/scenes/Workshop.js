@@ -19,7 +19,7 @@ class Workshop extends Phaser.Scene {
             'Chromium, bar, menu, notifications, lock screen.',
             'Custom backgrounds per theme in ~/.config/omarchy/backgrounds/.',
             'More themes at omarchy.org/themes/'
-        ]);
+        ], 'Themes explored! Talk to the Shell Master or Bar Master.');
 
         // Shell Tools NPC
         const shellNpc = new NPC(this, 1400, 300, 'elder', 'Shell Master', [
@@ -34,7 +34,7 @@ class Workshop extends Phaser.Scene {
             'tldr: concise man page examples.',
             'yt-dlp: download video from YouTube.',
             'try: date-stamped experiment dirs in ~/Work/tries.'
-        ]);
+        ], 'Tools mastered! Visit the Tinkerer or Bar Master next.');
 
         // Bar & Widgets NPC
         const barNpc = new NPC(this, 900, 500, 'blacksmith', 'Bar Master', [
@@ -49,7 +49,7 @@ class Workshop extends Phaser.Scene {
             'Configure in ~/.config/omarchy/shell.json.',
             'omarchy bar position bottom/left/right/top.',
             'omarchy bar defaults resets to shipped layout.'
-        ]);
+        ], 'Bar configured! You have mastered the Workshop. Return to the Village!');
 
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);

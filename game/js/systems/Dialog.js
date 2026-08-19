@@ -9,6 +9,7 @@ class Dialog {
         this.speaker = '';
         this.typeTimer = null;
         this._boundAdvance = null;
+        this.onClose = null;
 
         // Create terminal-style UI
         this.container = scene.add.container(960, 880);
@@ -66,12 +67,13 @@ class Dialog {
         scene.events.on('shutdown', this.destroy, this);
     }
 
-    show(speaker, text) {
+    show(speaker, text, onClose) {
         this.speaker = speaker;
         this.currentText = text;
         this.displayedText = '';
         this.textIndex = 0;
         this.isOpen = true;
+        this.onClose = onClose || null;
 
         this.nameText.setText(`> ${speaker.toUpperCase()}:`);
         this.textObj.setText('');
@@ -130,6 +132,10 @@ class Dialog {
         if (this.typeTimer) {
             this.typeTimer.remove();
             this.typeTimer = null;
+        }
+        if (this.onClose) {
+            this.onClose();
+            this.onClose = null;
         }
     }
 
