@@ -12,7 +12,7 @@ An ASCII/terminal-aesthetic RPG that lives at the wallpaper layer behind your wi
 - **Terminal-style aesthetic**: green monospace text on dark background
 - **Click-to-move** player character with ASCII sprites
 - **Layer shell** integration: sits behind windows at the wallpaper layer
-- **Toggle visibility** with `Super+P`
+- **Toggle visibility** with `Super+Alt+P`
 - **CSV-based dialog** for easy community contributions
 
 ## Screenshots
@@ -39,7 +39,7 @@ omarchy plugin add https://github.com/azzenabidi/omarchy-planet.git --enable
 hyprctl reload
 ```
 
-That's it! Press `Super+P` to launch Omarchy Planet.
+That's it! Press `Super+Alt+P` to launch Omarchy Planet.
 
 ### Manual Install
 
@@ -73,7 +73,7 @@ hyprctl reload
 
 | Keybind | Action |
 |---------|--------|
-| `Super+P` | Toggle Omarchy Planet on/off |
+| `Super+Alt+P` | Toggle Omarchy Planet on/off |
 | `Super+Ctrl+P` | Force close Omarchy Planet |
 
 ### In-Game Controls

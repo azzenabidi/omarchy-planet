@@ -8,6 +8,6 @@ Add screenshots here:
 - screenshot-workshop.png - Workshop with tools
 
 To take screenshots:
-1. Launch the game with Super+P
+1. Launch the game with Super+Alt+P
 2. Use your screenshot tool (Print Screen, Flameshot, etc.)
 3. Save to this directory
