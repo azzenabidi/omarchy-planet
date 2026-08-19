@@ -48,15 +48,15 @@ class Dialog {
         this.container.add(this.textObj);
 
         // Continue indicator
-        this.continueText = scene.add.text(410, 70, '[CLICK]', {
+        this.continueText = scene.add.text(410, 70, '[ENTER]', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(1, 1);
         this.container.add(this.continueText);
 
-        // Click to continue
-        scene.input.on('pointerdown', () => {
+        // Enter key to continue
+        scene.input.keyboard.on('keydown-ENTER', () => {
             if (!this.isOpen) return;
             this.advance();
         });
