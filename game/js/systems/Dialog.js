@@ -48,21 +48,18 @@ class Dialog {
         this.container.add(this.textObj);
 
         // Continue indicator
-        this.continueText = scene.add.text(410, 70, '[ENTER]', {
+        this.continueText = scene.add.text(410, 70, '[CLICK]', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(1, 1);
         this.container.add(this.continueText);
 
-        // Enter key to continue (DOM listener works in WebKit)
-        this._keyHandler = (e) => {
-            if (e.key === 'Enter' && this.isOpen) {
-                e.preventDefault();
-                this.advance();
-            }
-        };
-        document.addEventListener('keydown', this._keyHandler);
+        // Click to continue
+        scene.input.on('pointerdown', () => {
+            if (!this.isOpen) return;
+            this.advance();
+        });
 
         this.typeTimer = null;
     }
