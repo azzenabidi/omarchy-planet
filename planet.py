@@ -1,4 +1,7 @@
-import os, sys, time
+#!/usr/bin/python3
+"""Omarchy Planet - GTK4+WebKitGTK layer-shell container."""
+import os
+import sys
 from pathlib import Path
 from ctypes import CDLL
 
@@ -12,21 +15,19 @@ from gi.repository import Gtk, Gdk, WebKit, GLib
 from gi.repository import Gtk4LayerShell as LayerShell
 
 GAME_DIR = Path('/home/azzen/.config/omarchy/plugins/omarchy-planet/game')
-STATE_FILE = Path("/tmp/omarchy-planet-state")
 PID_FILE = Path("/tmp/omarchy-planet.pid")
-TOGGLE_FILE = Path("/tmp/omarchy-planet-toggle")
+VISIBLE_FILE = Path("/tmp/omarchy-planet-visible")
 
 
 class PlanetApp:
     def __init__(self):
-        self.app = Gtk.Application(application_id='com.omarchy.planet.v2')
+        self.app = Gtk.Application(application_id='com.omarchy.planet')
         self.app.connect('activate', self.on_activate)
         self.webview = None
-        self.is_active = False
-        self.last_toggle_mtime = 0
+        self.is_visible = False
+        self.last_sig = ""
 
     def on_activate(self, app):
-        print('ACTIVATED', flush=True)
         win = Gtk.ApplicationWindow(application=app)
         win.set_default_size(1920, 1080)
         win.set_decorated(False)
@@ -46,39 +47,48 @@ class PlanetApp:
         self.webview.set_hexpand(True)
 
         url = f"file://{GAME_DIR}/index.html"
-        print(f'Loading: {url}', flush=True)
         self.webview.load_uri(url)
         win.set_child(self.webview)
 
+        # JS bridge
         ucm = self.webview.get_user_content_manager()
         ucm.register_script_message_handler("omarchy")
         self.webview.connect("user-message-received", self.on_js_message)
 
+        # Write PID
         PID_FILE.write_text(str(os.getpid()))
-        STATE_FILE.write_text("inactive")
 
-        GLib.timeout_add(200, self.check_toggle)
-        print('Polling started', flush=True)
+        # Start invisible
+        VISIBLE_FILE.write_text("no")
+
+        # Poll for toggle every 300ms
+        GLib.timeout_add(300, self.poll)
 
         win.present()
-        print('WINDOW PRESENTED', flush=True)
 
-    def check_toggle(self):
-        if TOGGLE_FILE.exists():
-            mtime = TOGGLE_FILE.stat().st_mtime_ns
-            if mtime != self.last_toggle_mtime:
-                self.last_toggle_mtime = mtime
-                self.is_active = not self.is_active
-                state = 'active' if self.is_active else 'inactive'
-                STATE_FILE.write_text(state)
-                print(f'TOGGLED to {state}', flush=True)
+    def poll(self):
+        if VISIBLE_FILE.exists():
+            sig = VISIBLE_FILE.read_text().strip()
+            if sig != self.last_sig:
+                self.last_sig = sig
+                self.toggle()
         return True
+
+    def toggle(self):
+        self.is_visible = not self.is_visible
+        if self.is_visible:
+            VISIBLE_FILE.write_text("yes")
+            self.webview.run_javascript(
+                "window.onPlanetActivate && window.onPlanetActivate()")
+        else:
+            VISIBLE_FILE.write_text("no")
+            self.webview.run_javascript(
+                "window.onPlanetDeactivate && window.onPlanetDeactivate()")
 
     def on_js_message(self, webview, message):
         params = message.get_parameters()
         if params:
             cmd = params.get_string()
-            print(f'JS message: {cmd}', flush=True)
             if cmd == "open-settings":
                 self.run_omarchy("monitor")
             elif cmd == "open-theme":
@@ -86,8 +96,7 @@ class PlanetApp:
             elif cmd == "open-keyboard":
                 self.run_omarchy("keyboard")
             elif cmd == "dismiss":
-                self.is_active = not self.is_active
-                STATE_FILE.write_text('active' if self.is_active else 'inactive')
+                self.toggle()
         return True
 
     def run_omarchy(self, panel_id):
@@ -103,8 +112,7 @@ class PlanetApp:
 
     def cleanup(self):
         PID_FILE.unlink(missing_ok=True)
-        STATE_FILE.unlink(missing_ok=True)
-        TOGGLE_FILE.unlink(missing_ok=True)
+        VISIBLE_FILE.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
