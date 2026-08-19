@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "omarchy-planet",
+  "name": "Omarchy Planet",
+  "version": "1.0.0",
+  "author": "azzen",
+  "license": "MIT",
+  "description": "An RPG-style interactive tour of Omarchy as your wallpaper",
+  "kinds": ["service"],
+  "entryPoints": {
+    "service": "planet.py"
+  }
+}
