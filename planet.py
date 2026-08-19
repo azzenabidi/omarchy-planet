@@ -128,6 +128,8 @@ class PlanetApp:
                 self.run_omarchy("keyboard")
             elif cmd == "dismiss":
                 self.toggle()
+            elif cmd == "exit":
+                self.app.quit()
         return True
 
     def run_omarchy(self, panel_id):

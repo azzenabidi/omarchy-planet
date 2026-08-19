@@ -22,5 +22,9 @@ const Bridge = {
 
     dismiss() {
         this.send('dismiss');
+    },
+
+    exit() {
+        this.send('exit');
     }
 };

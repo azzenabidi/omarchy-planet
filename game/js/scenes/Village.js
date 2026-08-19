@@ -157,6 +157,19 @@ class Village extends Phaser.Scene {
         workshopPortal.on('pointerdown', () => {
             this.scene.start('Workshop');
         });
+
+        // Exit sign (top-right)
+        const exitSign = this.add.text(1860, 30, '[EXIT]', {
+            fontSize: '14px',
+            fill: '#ff4444',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(1, 0).setDepth(50).setInteractive({ useHandCursor: true });
+
+        exitSign.on('pointerdown', () => {
+            Bridge.exit();
+        });
     }
 
     createMap() {
