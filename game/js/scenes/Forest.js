@@ -89,7 +89,7 @@ class Forest extends Phaser.Scene {
             }).setOrigin(0.5);
 
             sign.on('pointerdown', () => {
-                if (!planetActive) return;
+                
                 this.dialog.show('Signpost', data.text);
             });
 

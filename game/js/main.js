@@ -11,27 +11,13 @@ const config = {
     render: {
         pixelArt: false,
         antialias: false
+    },
+    input: {
+        activePointers: 3
     }
 };
 
 const game = new Phaser.Game(config);
 
-let planetActive = false;
-
-window.onPlanetActivate = function() {
-    planetActive = true;
-    game.scene.scenes.forEach(scene => {
-        if (scene.sys.isActive()) {
-            scene.input.enabled = true;
-        }
-    });
-};
-
-window.onPlanetDeactivate = function() {
-    planetActive = false;
-    game.scene.scenes.forEach(scene => {
-        if (scene.sys.isActive()) {
-            scene.input.enabled = false;
-        }
-    });
-};
+window.onPlanetActivate = function() {};
+window.onPlanetDeactivate = function() {};

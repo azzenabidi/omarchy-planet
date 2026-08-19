@@ -12,7 +12,6 @@ class Player {
         this.speed = 160;
 
         scene.input.on('pointerdown', (pointer) => {
-            if (!planetActive) return;
             this.moveTo(pointer.worldX, pointer.worldY);
         });
     }

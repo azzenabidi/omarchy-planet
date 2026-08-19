@@ -84,7 +84,7 @@ class Workshop extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(50);
 
         workbench.on('pointerdown', () => {
-            if (!planetActive) return;
+            
             this.dialog.show('Workbench', 'Opening Theme Picker...');
             Bridge.openTheme();
         });
@@ -101,7 +101,7 @@ class Workshop extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(50);
 
         keyboard.on('pointerdown', () => {
-            if (!planetActive) return;
+            
             this.dialog.show('Keyboard', 'Opening Keybind Settings...');
             Bridge.openKeyboard();
         });

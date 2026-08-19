@@ -13,7 +13,6 @@ class NPC {
         // Make clickable
         this.sprite.setInteractive({ useHandCursor: true });
         this.sprite.on('pointerdown', () => {
-            if (!planetActive) return;
             this.talk();
         });
 

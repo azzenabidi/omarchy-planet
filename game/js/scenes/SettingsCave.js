@@ -75,7 +75,7 @@ class SettingsCave extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(50);
 
         entrance.on('pointerdown', () => {
-            if (!planetActive) return;
+            
             this.dialog.show('System', 'Opening Omarchy Settings...');
             Bridge.openSettings();
         });
