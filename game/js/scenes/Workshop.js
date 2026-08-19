@@ -5,27 +5,24 @@ class Workshop extends Phaser.Scene {
 
     create() {
         this.cameras.main.setBackgroundColor('#221100');
-
-        // Create tile map
         this.createMap();
-
-        // Create interactive objects
         this.createWorkshop();
 
-        // Create tinkerer NPC
         this.tinkerer = new NPC(this, 400, 300, 'merchant', 'Tinkerer', [
-            'Welcome to the Workshop!',
-            'Here you can customize everything about your Omarchy experience.',
-            'Click the workbench to change themes, or the keyboard to edit keybinds.'
+            'Welcome to the Workshop! I am the Tinkerer.',
+            'Omarchy has 22 themes: Catppuccin, Gruvbox, Nord, Tokyo Night, Rose Pine, and more.',
+            'Each theme colors your terminal, editor, bar, and apps consistently.',
+            'The Bar can be positioned top, bottom, left, or right. Toggle with Super+Shift+Space.',
+            'Widgets in the bar: Menu, Workspaces, Clock, Weather, Audio, Bluetooth, Network, Power.',
+            'Click bar widgets for popups - Audio for volume, Clock for calendar, Network for Wi-Fi.',
+            'Plugins extend Omarchy. Install with: omarchy plugin add <git-url>',
+            'Clone a built-in plugin to customize it: omarchy plugin clone <id>',
+            'The Menu (Super+Space) has Install, Style, Setup, and System sections.'
         ]);
 
-        // Create player
         this.player = new Player(this, 960, 700);
-
-        // Create dialog system
         this.dialog = new Dialog(this);
 
-        // Scene title
         this.add.text(960, 30, '[ WORKSHOP ]', {
             fontSize: '20px',
             fill: '#00ff00',
@@ -33,7 +30,6 @@ class Workshop extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        // Instructions
         this.add.text(960, 1050, '> Click objects to customize | Talk to the Tinkerer', {
             fontSize: '12px',
             fill: '#00aa00',
@@ -46,21 +42,18 @@ class Workshop extends Phaser.Scene {
         const mapWidth = 60;
         const mapHeight = 34;
 
-        // Wood floor
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
                 this.add.image(x * tileSize + 16, y * tileSize + 16, 'wood');
             }
         }
 
-        // Stone work area
         for (let x = 15; x < 45; x++) {
             for (let y = 10; y < 20; y++) {
                 this.add.image(x * tileSize + 16, y * tileSize + 16, 'stone');
             }
         }
 
-        // Walls
         for (let x = 0; x < mapWidth; x++) {
             this.add.image(x * tileSize + 16, 0, 'cave');
             this.add.image(x * tileSize + 16, 33 * tileSize + 16, 'cave');
@@ -72,44 +65,38 @@ class Workshop extends Phaser.Scene {
     }
 
     createWorkshop() {
-        // Workbench (theme picker)
         const workbench = this.add.image(600, 400, 'workbench');
         workbench.setInteractive({ useHandCursor: true });
         workbench.setScale(2);
 
-        this.add.text(600, 480, '> Theme Bench', {
+        this.add.text(600, 480, '> Theme Picker', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         workbench.on('pointerdown', () => {
-            
             this.dialog.show('Workbench', 'Opening Theme Picker...');
             Bridge.openTheme();
         });
 
-        // Keyboard (keybind editor)
         const keyboard = this.add.image(1300, 400, 'keyboard');
         keyboard.setInteractive({ useHandCursor: true });
         keyboard.setScale(2);
 
-        this.add.text(1300, 480, '> Keybind Station', {
+        this.add.text(1300, 480, '> Keybind Editor', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         keyboard.on('pointerdown', () => {
-            
             this.dialog.show('Keyboard', 'Opening Keybind Settings...');
             Bridge.openKeyboard();
         });
     }
 
     update() {
-        if (this.player) {
-            this.player.update();
-        }
+        if (this.player) this.player.update();
     }
 }

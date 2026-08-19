@@ -5,27 +5,23 @@ class SettingsCave extends Phaser.Scene {
 
     create() {
         this.cameras.main.setBackgroundColor('#111111');
-
-        // Create tile map
         this.createMap();
-
-        // Create cave entrance
         this.createCaveEntrance();
 
-        // Create guard NPC
         this.guard = new NPC(this, 960, 350, 'blacksmith', 'Cave Guard', [
             'Halt! This is the Cave of Settings.',
-            'Inside you can configure your display, audio, and network.',
-            'Click the cave entrance to open Omarchy Settings.'
+            'Here you can configure every aspect of your Omarchy system.',
+            'Click the entrance below to open the Display settings panel.',
+            'From the Omarchy Menu (Super+Space), you can access all settings:',
+            'Monitors, Keybindings, Input, Network DNS, Default apps,',
+            'Plugins, Security (fingerprint/FIDO2), and Hyprland config.',
+            'Use Super+Ctrl+D for Display, Super+Ctrl+A for Audio,',
+            'Super+Ctrl+B for Bluetooth, Super+Ctrl+W for Network.'
         ]);
 
-        // Create player at top
         this.player = new Player(this, 960, 100);
-
-        // Create dialog system
         this.dialog = new Dialog(this);
 
-        // Scene title
         this.add.text(960, 30, '[ SETTINGS CAVE ]', {
             fontSize: '20px',
             fill: '#00ff00',
@@ -39,20 +35,17 @@ class SettingsCave extends Phaser.Scene {
         const mapWidth = 60;
         const mapHeight = 34;
 
-        // Cave floor
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
                 this.add.image(x * tileSize + 16, y * tileSize + 16, 'cave');
             }
         }
 
-        // Stone path
         for (let x = 10; x < 50; x++) {
             this.add.image(x * tileSize + 16, 15 * tileSize + 16, 'stone');
             this.add.image(x * tileSize + 16, 16 * tileSize + 16, 'stone');
         }
 
-        // Cave walls (edges)
         for (let x = 0; x < mapWidth; x++) {
             this.add.image(x * tileSize + 16, 0, 'cave');
             this.add.image(x * tileSize + 16, 33 * tileSize + 16, 'cave');
@@ -68,22 +61,19 @@ class SettingsCave extends Phaser.Scene {
         entrance.setInteractive({ useHandCursor: true });
         entrance.setScale(2);
 
-        this.add.text(960, 680, '> Click to open Settings', {
+        this.add.text(960, 680, '> Click to open Display Settings', {
             fontSize: '14px',
             fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         entrance.on('pointerdown', () => {
-            
-            this.dialog.show('System', 'Opening Omarchy Settings...');
+            this.dialog.show('System', 'Opening Display Settings...');
             Bridge.openSettings();
         });
     }
 
     update() {
-        if (this.player) {
-            this.player.update();
-        }
+        if (this.player) this.player.update();
     }
 }

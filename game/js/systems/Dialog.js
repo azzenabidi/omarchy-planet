@@ -5,31 +5,31 @@ class Dialog {
         this.currentText = '';
         this.displayedText = '';
         this.textIndex = 0;
-        this.charDelay = 30;
+        this.charDelay = 20;
         this.speaker = '';
 
-        // Create terminal-style UI
-        this.container = scene.add.container(960, 900);
+        // Create terminal-style UI - taller box for longer text
+        this.container = scene.add.container(960, 880);
         this.container.setDepth(100);
         this.container.setVisible(false);
 
         // Terminal border
         const border = scene.add.graphics();
         border.lineStyle(2, 0x00ff00, 1);
-        border.strokeRect(-400, -70, 800, 140);
+        border.strokeRect(-450, -90, 900, 180);
 
         // Terminal background
         const bg = scene.add.graphics();
-        bg.fillStyle(0x000000, 0.9);
-        bg.fillRect(-400, -70, 800, 140);
+        bg.fillStyle(0x000000, 0.95);
+        bg.fillRect(-450, -90, 900, 180);
         bg.lineStyle(2, 0x00ff00, 0.5);
-        bg.strokeRect(-400, -70, 800, 140);
+        bg.strokeRect(-450, -90, 900, 180);
 
         this.container.add(bg);
         this.container.add(border);
 
-        // Speaker name (terminal prompt style)
-        this.nameText = scene.add.text(-380, -60, '> GUEST: ', {
+        // Speaker name
+        this.nameText = scene.add.text(-430, -80, '> GUEST:', {
             fontSize: '14px',
             fill: '#00ff00',
             fontStyle: 'bold',
@@ -38,16 +38,17 @@ class Dialog {
         this.container.add(this.nameText);
 
         // Dialog text
-        this.textObj = scene.add.text(-380, -30, '', {
-            fontSize: '14px',
+        this.textObj = scene.add.text(-430, -55, '', {
+            fontSize: '13px',
             fill: '#00ff00',
             fontFamily: 'monospace',
-            wordWrap: { width: 760 }
+            wordWrap: { width: 860 },
+            lineSpacing: 4
         });
         this.container.add(this.textObj);
 
         // Continue indicator
-        this.continueText = scene.add.text(360, 50, '[ENTER]', {
+        this.continueText = scene.add.text(410, 70, '[CLICK]', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
@@ -60,7 +61,6 @@ class Dialog {
             this.advance();
         });
 
-        // Typing timer
         this.typeTimer = null;
     }
 
@@ -71,7 +71,7 @@ class Dialog {
         this.textIndex = 0;
         this.isOpen = true;
 
-        this.nameText.setText(`> ${speaker.toUpperCase()}: `);
+        this.nameText.setText(`> ${speaker.toUpperCase()}:`);
         this.textObj.setText('');
         this.container.setVisible(true);
         this.continueText.setVisible(false);
@@ -80,9 +80,7 @@ class Dialog {
     }
 
     startTyping() {
-        if (this.typeTimer) {
-            this.typeTimer.remove();
-        }
+        if (this.typeTimer) this.typeTimer.remove();
 
         this.typeTimer = this.scene.time.addEvent({
             delay: this.charDelay,
@@ -103,14 +101,12 @@ class Dialog {
 
     advance() {
         if (this.typeTimer) {
-            // Skip typing animation
             this.typeTimer.remove();
             this.typeTimer = null;
             this.displayedText = this.currentText;
             this.textObj.setText(this.displayedText);
             this.continueText.setVisible(true);
         } else {
-            // Close dialog
             this.hide();
         }
     }
