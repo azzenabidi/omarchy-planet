@@ -5,9 +5,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from ctypes import CDLL
-
-CDLL('libgtk4-layer-shell.so')
 
 import gi
 gi.require_version('Gtk', '4.0')
@@ -93,7 +90,7 @@ class PlanetApp:
         # WebKit.LoadEvent.FINISHED = 4
         if event == 4:
             js = f"window.userName = {json.dumps(user_name)};"
-            webview.run_javascript(js, None, None, None)
+            self.exec_js(js)
 
     def poll(self):
         if VISIBLE_FILE.exists():
@@ -108,13 +105,16 @@ class PlanetApp:
         if self.is_visible:
             self.window.set_opacity(1.0)
             VISIBLE_FILE.write_text("yes")
-            self.webview.run_javascript(
-                "window.onPlanetActivate && window.onPlanetActivate()")
+            self.exec_js("window.onPlanetActivate && window.onPlanetActivate()")
         else:
             self.window.set_opacity(0.0)
             VISIBLE_FILE.write_text("no")
-            self.webview.run_javascript(
-                "window.onPlanetDeactivate && window.onPlanetDeactivate()")
+            self.exec_js("window.onPlanetDeactivate && window.onPlanetDeactivate()")
+
+    def exec_js(self, js):
+        self.webview.evaluate_javascript(
+            js, -1, None, None, None, None, None
+        )
 
     def on_js_message(self, webview, message):
         params = message.get_parameters()

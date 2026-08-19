@@ -21,11 +21,14 @@ def is_running(pid):
 
 
 def start():
+    env = os.environ.copy()
+    env["LD_PRELOAD"] = "/usr/lib/libgtk4-layer-shell.so"
     subprocess.Popen(
         ["/usr/bin/python3", str(PLANET_SCRIPT)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
-        start_new_session=True
+        start_new_session=True,
+        env=env
     )
 
 
