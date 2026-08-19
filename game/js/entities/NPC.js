@@ -5,7 +5,6 @@ class NPC {
         this.dialogLines = dialogLines;
         this.recommendation = recommendation || null;
         this.currentLine = 0;
-        this.isTalking = false;
 
         this.sprite = scene.physics.add.sprite(x, y, texture);
         this.sprite.setOrigin(0.5, 0.5);
@@ -44,25 +43,22 @@ class NPC {
     }
 
     talk() {
-        // If dialog is open from this NPC, advance it
-        if (this.scene.dialog && this.scene.dialog.isOpen && this.isTalking) {
-            this.scene.dialog.advance();
-            return;
-        }
-
-        // If dialog is open from someone else, ignore
+        // If dialog is open and it's ours, clicking NPC does nothing (dialog click handles it)
         if (this.scene.dialog && this.scene.dialog.isOpen) {
             return;
         }
 
-        // If we've shown all lines, show recommendation then reset
+        this.showNextLine();
+    }
+
+    showNextLine() {
+        // If we've shown all regular lines, show recommendation then reset
         if (this.currentLine >= this.dialogLines.length) {
             if (this.recommendation) {
-                this.scene.dialog.show(this.name, this.recommendation, () => {
-                    this.isTalking = false;
-                });
-                this.isTalking = true;
-                // Reset after recommendation
+                const rec = this.recommendation;
+                this.currentLine = 0;
+                this.scene.dialog.show(this.name, rec, null);
+            } else {
                 this.currentLine = 0;
             }
             return;
@@ -71,18 +67,11 @@ class NPC {
         // Show next line in sequence
         const line = this.dialogLines[this.currentLine];
         this.currentLine++;
-        this.isTalking = true;
 
-        // If this was the last regular line and there's a recommendation,
-        // prepare to show it on next click
-        const isLastLine = this.currentLine >= this.dialogLines.length;
-
-        if (this.scene.dialog) {
-            this.scene.dialog.show(this.name, line, () => {
-                this.isTalking = false;
-                // If it was the last line, next click will show recommendation
-            });
-        }
+        // onAdvance callback: when player clicks dialog, show next line
+        this.scene.dialog.show(this.name, line, () => {
+            this.showNextLine();
+        });
     }
 
     hideIndicator() {

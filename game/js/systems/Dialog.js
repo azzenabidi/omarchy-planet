@@ -9,7 +9,7 @@ class Dialog {
         this.speaker = '';
         this.typeTimer = null;
         this._boundAdvance = null;
-        this.onClose = null;
+        this.onAdvance = null;
 
         // Create terminal-style UI
         this.container = scene.add.container(960, 880);
@@ -67,13 +67,13 @@ class Dialog {
         scene.events.on('shutdown', this.destroy, this);
     }
 
-    show(speaker, text, onClose) {
+    show(speaker, text, onAdvance) {
         this.speaker = speaker;
         this.currentText = text;
         this.displayedText = '';
         this.textIndex = 0;
         this.isOpen = true;
-        this.onClose = onClose || null;
+        this.onAdvance = onAdvance || null;
 
         this.nameText.setText(`> ${speaker.toUpperCase()}:`);
         this.textObj.setText('');
@@ -115,27 +115,30 @@ class Dialog {
 
     advance() {
         if (this.typeTimer) {
+            // Typing in progress - finish it
             this.typeTimer.remove();
             this.typeTimer = null;
             this.displayedText = this.currentText;
             this.textObj.setText(this.displayedText);
             this.continueText.setVisible(true);
         } else {
-            this.hide();
+            // Text fully shown - ask NPC for next line
+            if (this.onAdvance) {
+                this.onAdvance();
+            } else {
+                this.hide();
+            }
         }
     }
 
     hide() {
         this.isOpen = false;
+        this.onAdvance = null;
         this.container.setVisible(false);
         this.scene.input.off('pointerdown', this._boundAdvance);
         if (this.typeTimer) {
             this.typeTimer.remove();
             this.typeTimer = null;
-        }
-        if (this.onClose) {
-            this.onClose();
-            this.onClose = null;
         }
     }
 
