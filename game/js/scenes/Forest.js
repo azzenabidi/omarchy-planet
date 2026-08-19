@@ -85,12 +85,13 @@ class Forest extends Phaser.Scene {
             const signSprite = this.add.image(960, y, 'sign');
             signSprite.setInteractive({ useHandCursor: true });
             signSprite.setScale(1.5);
+            signSprite.setDepth(5);
 
             const label = this.add.text(960, y - 30, '[SIGN]', {
                 fontSize: '10px',
                 fill: '#00ff00',
                 fontFamily: 'monospace'
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setDepth(6);
 
             signSprite.on('pointerdown', () => {
                 this.dialog.show('Signpost', sign.lines[0]);

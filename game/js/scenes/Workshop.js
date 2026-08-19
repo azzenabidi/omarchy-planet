@@ -92,12 +92,13 @@ class Workshop extends Phaser.Scene {
         const workbench = this.add.image(600, 400, 'workbench');
         workbench.setInteractive({ useHandCursor: true });
         workbench.setScale(2);
+        workbench.setDepth(5);
 
         this.add.text(600, 480, '> Theme Picker', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(50);
+        }).setOrigin(0.5).setDepth(6);
 
         workbench.on('pointerdown', () => {
             this.dialog.show('Workbench', 'Opening Theme Picker...');
@@ -107,12 +108,13 @@ class Workshop extends Phaser.Scene {
         const keyboard = this.add.image(1300, 400, 'keyboard');
         keyboard.setInteractive({ useHandCursor: true });
         keyboard.setScale(2);
+        keyboard.setDepth(5);
 
         this.add.text(1300, 480, '> Keybind Editor', {
             fontSize: '12px',
             fill: '#00ff00',
             fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(50);
+        }).setOrigin(0.5).setDepth(6);
 
         keyboard.on('pointerdown', () => {
             this.dialog.show('Keyboard', 'Opening Keybind Settings...');

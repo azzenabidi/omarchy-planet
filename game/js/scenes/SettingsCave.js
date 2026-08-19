@@ -85,6 +85,7 @@ class SettingsCave extends Phaser.Scene {
         const entrance = this.add.image(960, 600, 'cave_entrance');
         entrance.setInteractive({ useHandCursor: true });
         entrance.setScale(2);
+        entrance.setDepth(5);
 
         this.add.text(960, 680, '> Click to open Display Settings', {
             fontSize: '14px',
