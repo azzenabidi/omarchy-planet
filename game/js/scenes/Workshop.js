@@ -30,11 +30,32 @@ class Workshop extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click objects to customize | Talk to the Tinkerer', {
+        this.add.text(960, 1050, '> Click objects to customize | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
+
+        // Return portal
+        const returnPortal = this.add.text(1890, 540, '[VILLAGE] <', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(1, 0.5).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: returnPortal,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        returnPortal.on('pointerdown', () => {
+            this.scene.start('Village');
+        });
     }
 
     createMap() {

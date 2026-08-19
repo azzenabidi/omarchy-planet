@@ -2,60 +2,47 @@ class Player {
     constructor(scene, x, y) {
         this.scene = scene;
         this.sprite = scene.physics.add.sprite(x, y, 'player');
-        this.sprite.setOrigin(0.5, 0.5);
-        this.sprite.setCollideWorldBounds(true);
         this.sprite.setDepth(10);
-
-        this.targetX = x;
-        this.targetY = y;
+        this.label = scene.add.text(x, y - 20, '@', {
+            fontSize: '12px',
+            fill: '#00ff00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5).setDepth(11);
         this.isMoving = false;
-        this.speed = 160;
 
+        // Click to move
         scene.input.on('pointerdown', (pointer) => {
+            if (scene.dialog && scene.dialog.isOpen) return;
+            const hitObjects = scene.input.hitTestPointer(pointer);
+            if (hitObjects.length > 0) return;
             this.moveTo(pointer.worldX, pointer.worldY);
         });
     }
 
     moveTo(x, y) {
-        this.targetX = x;
-        this.targetY = y;
+        this.scene.physics.moveTo(this.sprite, x, y, 150);
         this.isMoving = true;
+        this.scene.input.on('pointerdown', () => this.stopMovement());
+    }
+
+    stopMovement() {
+        this.sprite.body.setVelocity(0);
+        this.isMoving = false;
     }
 
     update() {
-        if (!this.isMoving) return;
+        this.label.setPosition(this.sprite.x, this.sprite.y - 20);
 
-        const dx = this.targetX - this.sprite.x;
-        const dy = this.targetY - this.sprite.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (this.isMoving) {
+            const dist = Phaser.Math.Distance.Between(
+                this.sprite.x, this.sprite.y,
+                this.sprite.body.velocity.x === 0 ? this.sprite.x : this.sprite.x,
+                this.sprite.body.velocity.y === 0 ? this.sprite.y : this.sprite.y
+            );
 
-        if (dist < 4) {
-            this.sprite.setVelocity(0, 0);
-            this.isMoving = false;
-            return;
+            if (this.sprite.body.velocity.x === 0 && this.sprite.body.velocity.y === 0) {
+                this.isMoving = false;
+            }
         }
-
-        const vx = (dx / dist) * this.speed;
-        const vy = (dy / dist) * this.speed;
-        this.sprite.setVelocity(vx, vy);
-
-        // Flip sprite based on direction
-        if (dx < -2) {
-            this.sprite.setFlipX(true);
-        } else if (dx > 2) {
-            this.sprite.setFlipX(false);
-        }
-    }
-
-    getPosition() {
-        return { x: this.sprite.x, y: this.sprite.y };
-    }
-
-    setPosition(x, y) {
-        this.sprite.setPosition(x, y);
-        this.targetX = x;
-        this.targetY = y;
-        this.isMoving = false;
-        this.sprite.setVelocity(0, 0);
     }
 }

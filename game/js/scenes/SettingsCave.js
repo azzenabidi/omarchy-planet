@@ -28,6 +28,27 @@ class SettingsCave extends Phaser.Scene {
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
+
+        // Return portal
+        const returnPortal = this.add.text(30, 540, '> [VILLAGE]', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(0, 0.5).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: returnPortal,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        returnPortal.on('pointerdown', () => {
+            this.scene.start('Village');
+        });
     }
 
     createMap() {

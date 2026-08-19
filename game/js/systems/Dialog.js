@@ -7,8 +7,10 @@ class Dialog {
         this.textIndex = 0;
         this.charDelay = 20;
         this.speaker = '';
+        this.typeTimer = null;
+        this._boundAdvance = null;
 
-        // Create terminal-style UI - taller box for longer text
+        // Create terminal-style UI
         this.container = scene.add.container(960, 880);
         this.container.setDepth(100);
         this.container.setVisible(false);
@@ -55,13 +57,13 @@ class Dialog {
         }).setOrigin(1, 1);
         this.container.add(this.continueText);
 
-        // Click to continue
-        scene.input.on('pointerdown', () => {
+        // Bind advance once, reuse
+        this._boundAdvance = () => {
             if (!this.isOpen) return;
             this.advance();
-        });
+        };
 
-        this.typeTimer = null;
+        scene.events.on('shutdown', this.destroy, this);
     }
 
     show(speaker, text) {
@@ -73,8 +75,18 @@ class Dialog {
 
         this.nameText.setText(`> ${speaker.toUpperCase()}:`);
         this.textObj.setText('');
+        this.textObj.setWordWrapWidth(860);
         this.container.setVisible(true);
         this.continueText.setVisible(false);
+
+        // Resize dialog box to fit content
+        this.textObj.setText(text);
+        const textHeight = this.textObj.height;
+        const boxHeight = Math.max(180, textHeight + 60);
+        this.container.y = 1080 - boxHeight / 2 - 20;
+
+        // Register click handler when dialog opens
+        this.scene.input.on('pointerdown', this._boundAdvance);
 
         this.startTyping();
     }
@@ -114,9 +126,15 @@ class Dialog {
     hide() {
         this.isOpen = false;
         this.container.setVisible(false);
+        this.scene.input.off('pointerdown', this._boundAdvance);
         if (this.typeTimer) {
             this.typeTimer.remove();
             this.typeTimer = null;
         }
+    }
+
+    destroy() {
+        this.hide();
+        this._boundAdvance = null;
     }
 }

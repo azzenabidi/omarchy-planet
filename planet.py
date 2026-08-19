@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Omarchy Planet - GTK4+WebKitGTK layer-shell container."""
+import json
 import os
 import subprocess
 import sys
@@ -91,7 +92,7 @@ class PlanetApp:
     def on_page_loaded(self, webview, event, user_name):
         # WebKit.LoadEvent.FINISHED = 4
         if event == 4:
-            js = f"window.userName = '{user_name}';"
+            js = f"window.userName = {json.dumps(user_name)};"
             webview.run_javascript(js, None, None, None)
 
     def poll(self):

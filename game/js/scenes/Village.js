@@ -53,6 +53,9 @@ class Village extends Phaser.Scene {
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);
 
+        // Portals
+        this.createPortals();
+
         this.add.text(960, 30, '[ OMARCHY PLANET ]', {
             fontSize: '20px',
             fill: '#00ff00',
@@ -96,6 +99,71 @@ class Village extends Phaser.Scene {
             this.add.image(16, y * tileSize + 16, 'tree');
             this.add.image(mapWidth * tileSize - 16, y * tileSize + 16, 'tree');
         }
+    }
+
+    createPortals() {
+        // Forest portal (south)
+        const forestPortal = this.add.text(960, 1060, '> [FOREST]', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(0.5).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: forestPortal,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        forestPortal.on('pointerdown', () => {
+            this.scene.start('Forest');
+        });
+
+        // SettingsCave portal (west)
+        const cavePortal = this.add.text(30, 540, '> [CAVE]', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(0, 0.5).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: cavePortal,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        cavePortal.on('pointerdown', () => {
+            this.scene.start('SettingsCave');
+        });
+
+        // Workshop portal (east)
+        const workshopPortal = this.add.text(1890, 540, '[WORKSHOP] <', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace',
+            backgroundColor: '#000000',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(1, 0.5).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: workshopPortal,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        workshopPortal.on('pointerdown', () => {
+            this.scene.start('Workshop');
+        });
     }
 
     update() {
