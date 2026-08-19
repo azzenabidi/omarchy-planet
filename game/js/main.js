@@ -2,14 +2,14 @@ const config = {
     type: Phaser.AUTO,
     width: 1920,
     height: 1080,
-    transparent: true,
+    backgroundColor: '#0a0a0a',
     scene: [Boot, Village, Forest, SettingsCave, Workshop],
     physics: {
         default: 'arcade',
         arcade: { debug: false }
     },
     render: {
-        pixelArt: true,
+        pixelArt: false,
         antialias: false
     }
 };

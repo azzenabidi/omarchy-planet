@@ -8,41 +8,49 @@ class Dialog {
         this.charDelay = 30;
         this.speaker = '';
 
-        // Create UI elements
+        // Create terminal-style UI
         this.container = scene.add.container(960, 900);
         this.container.setDepth(100);
         this.container.setVisible(false);
 
-        // Background
-        this.bg = scene.add.graphics();
-        this.bg.fillStyle(0x000000, 0.85);
-        this.bg.fillRoundedRect(-400, -60, 800, 120, 8);
-        this.bg.lineStyle(2, 0xffffff, 0.5);
-        this.bg.strokeRoundedRect(-400, -60, 800, 120, 8);
-        this.container.add(this.bg);
+        // Terminal border
+        const border = scene.add.graphics();
+        border.lineStyle(2, 0x00ff00, 1);
+        border.strokeRect(-400, -70, 800, 140);
 
-        // Speaker name
-        this.nameText = scene.add.text(-380, -50, '', {
-            fontSize: '18px',
-            fill: '#ffcc00',
+        // Terminal background
+        const bg = scene.add.graphics();
+        bg.fillStyle(0x000000, 0.9);
+        bg.fillRect(-400, -70, 800, 140);
+        bg.lineStyle(2, 0x00ff00, 0.5);
+        bg.strokeRect(-400, -70, 800, 140);
+
+        this.container.add(bg);
+        this.container.add(border);
+
+        // Speaker name (terminal prompt style)
+        this.nameText = scene.add.text(-380, -60, '> GUEST: ', {
+            fontSize: '14px',
+            fill: '#00ff00',
             fontStyle: 'bold',
             fontFamily: 'monospace'
         });
         this.container.add(this.nameText);
 
         // Dialog text
-        this.textObj = scene.add.text(-380, -20, '', {
-            fontSize: '16px',
-            fill: '#ffffff',
+        this.textObj = scene.add.text(-380, -30, '', {
+            fontSize: '14px',
+            fill: '#00ff00',
             fontFamily: 'monospace',
             wordWrap: { width: 760 }
         });
         this.container.add(this.textObj);
 
         // Continue indicator
-        this.continueText = scene.add.text(360, 40, '▼', {
-            fontSize: '14px',
-            fill: '#ffffff'
+        this.continueText = scene.add.text(360, 50, '[ENTER]', {
+            fontSize: '12px',
+            fill: '#00ff00',
+            fontFamily: 'monospace'
         }).setOrigin(1, 1);
         this.container.add(this.continueText);
 
@@ -63,7 +71,7 @@ class Dialog {
         this.textIndex = 0;
         this.isOpen = true;
 
-        this.nameText.setText(speaker);
+        this.nameText.setText(`> ${speaker.toUpperCase()}: `);
         this.textObj.setText('');
         this.container.setVisible(true);
         this.continueText.setVisible(false);

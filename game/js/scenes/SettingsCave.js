@@ -26,9 +26,9 @@ class SettingsCave extends Phaser.Scene {
         this.dialog = new Dialog(this);
 
         // Scene title
-        this.add.text(960, 30, '~ Settings Cave ~', {
-            fontSize: '24px',
-            fill: '#8888ff',
+        this.add.text(960, 30, '[ SETTINGS CAVE ]', {
+            fontSize: '20px',
+            fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
@@ -68,9 +68,9 @@ class SettingsCave extends Phaser.Scene {
         entrance.setInteractive({ useHandCursor: true });
         entrance.setScale(2);
 
-        this.add.text(960, 680, 'Click to open Settings', {
+        this.add.text(960, 680, '> Click to open Settings', {
             fontSize: '14px',
-            fill: '#88aaff',
+            fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 

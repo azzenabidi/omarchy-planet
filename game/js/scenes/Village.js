@@ -38,21 +38,18 @@ class Village extends Phaser.Scene {
         // Create dialog system
         this.dialog = new Dialog(this);
 
-        // Scene transitions
-        this.createTransitionZones();
-
-        // Welcome text
-        this.welcomeText = this.add.text(960, 50, '~ Omarchy Village ~', {
-            fontSize: '24px',
-            fill: '#ffcc00',
+        // Welcome text (terminal style)
+        this.welcomeText = this.add.text(960, 30, '[ OMACHY PLANET ]', {
+            fontSize: '20px',
+            fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
         // Instructions
-        this.add.text(960, 1050, 'Click to move • Click NPCs to talk • Head south to explore', {
-            fontSize: '14px',
-            fill: '#888888',
+        this.add.text(960, 1050, '> Click to move | Click NPCs to talk | Head south to explore', {
+            fontSize: '12px',
+            fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
     }
@@ -90,18 +87,6 @@ class Village extends Phaser.Scene {
             this.add.image(16, y * tileSize + 16, 'tree');
             this.add.image(mapWidth * tileSize - 16, y * tileSize + 16, 'tree');
         }
-    }
-
-    createTransitionZones() {
-        // Exit to Forest (south)
-        const exitZone = this.add.zone(960, 1060, 320, 40);
-        this.physics.add.existing(exitZone, true);
-
-        this.add.text(960, 1030, '↓ Forest Path ↓', {
-            fontSize: '12px',
-            fill: '#88ff88',
-            fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(50);
     }
 
     update() {

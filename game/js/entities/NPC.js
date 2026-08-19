@@ -17,22 +17,28 @@ class NPC {
             this.talk();
         });
 
-        // Floating indicator
-        this.indicator = scene.add.text(x, y - 20, '!', {
-            fontSize: '16px',
-            fill: '#ffff00',
+        // Name label
+        this.nameLabel = scene.add.text(x, y - 30, name, {
+            fontSize: '12px',
+            fill: '#00ff00',
+            fontFamily: 'monospace',
             fontStyle: 'bold'
-        }).setOrigin(0.5);
-        this.indicator.setDepth(11);
+        }).setOrigin(0.5).setDepth(11);
 
-        // Float animation
+        // Floating indicator
+        this.indicator = scene.add.text(x, y - 45, '>', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5).setDepth(11);
+
+        // Blink animation
         scene.tweens.add({
             targets: this.indicator,
-            y: y - 24,
-            duration: 800,
+            alpha: 0,
+            duration: 500,
             yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
+            repeat: -1
         });
     }
 
@@ -51,9 +57,11 @@ class NPC {
 
     hideIndicator() {
         this.indicator.setVisible(false);
+        this.nameLabel.setVisible(false);
     }
 
     showIndicator() {
         this.indicator.setVisible(true);
+        this.nameLabel.setVisible(true);
     }
 }

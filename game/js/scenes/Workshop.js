@@ -26,17 +26,17 @@ class Workshop extends Phaser.Scene {
         this.dialog = new Dialog(this);
 
         // Scene title
-        this.add.text(960, 30, '~ Workshop ~', {
-            fontSize: '24px',
-            fill: '#ffaa44',
+        this.add.text(960, 30, '[ WORKSHOP ]', {
+            fontSize: '20px',
+            fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
         // Instructions
-        this.add.text(960, 1050, 'Click objects to customize • Talk to the Tinkerer', {
-            fontSize: '14px',
-            fill: '#888888',
+        this.add.text(960, 1050, '> Click objects to customize | Talk to the Tinkerer', {
+            fontSize: '12px',
+            fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
     }
@@ -77,9 +77,9 @@ class Workshop extends Phaser.Scene {
         workbench.setInteractive({ useHandCursor: true });
         workbench.setScale(2);
 
-        this.add.text(600, 480, 'Theme Bench', {
+        this.add.text(600, 480, '> Theme Bench', {
             fontSize: '12px',
-            fill: '#ffaa44',
+            fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
@@ -94,9 +94,9 @@ class Workshop extends Phaser.Scene {
         keyboard.setInteractive({ useHandCursor: true });
         keyboard.setScale(2);
 
-        this.add.text(1300, 480, 'Keybind Station', {
+        this.add.text(1300, 480, '> Keybind Station', {
             fontSize: '12px',
-            fill: '#ffaa44',
+            fill: '#00ff00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 

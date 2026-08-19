@@ -20,17 +20,17 @@ class Forest extends Phaser.Scene {
         this.dialog = new Dialog(this);
 
         // Scene title
-        this.add.text(960, 30, '~ Forest Path ~', {
-            fontSize: '24px',
-            fill: '#44ff44',
+        this.add.text(960, 30, '[ FOREST PATH ]', {
+            fontSize: '20px',
+            fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
         // Instructions
-        this.add.text(960, 1050, 'Click signs to learn keybinds • Continue south for more', {
-            fontSize: '14px',
-            fill: '#888888',
+        this.add.text(960, 1050, '> Click signs to learn keybinds | Continue south for more', {
+            fontSize: '12px',
+            fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
     }
@@ -43,8 +43,7 @@ class Forest extends Phaser.Scene {
         // Dark grass/forest floor
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
-                const tile = (x + y) % 3 === 0 ? 'grass' : 'grass';
-                this.add.image(x * tileSize + 16, y * tileSize + 16, tile);
+                this.add.image(x * tileSize + 16, y * tileSize + 16, 'grass');
             }
         }
 
@@ -83,9 +82,9 @@ class Forest extends Phaser.Scene {
             const sign = this.add.image(data.x, data.y, 'sign');
             sign.setInteractive({ useHandCursor: true });
 
-            const label = this.add.text(data.x, data.y - 24, 'sign', {
+            const label = this.add.text(data.x, data.y - 24, '[SIGN]', {
                 fontSize: '10px',
-                fill: '#ffcc00',
+                fill: '#00ff00',
                 fontFamily: 'monospace'
             }).setOrigin(0.5);
 
