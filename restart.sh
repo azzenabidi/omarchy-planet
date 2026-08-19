@@ -8,5 +8,5 @@ if [ -f "$PID_FILE" ]; then
     sleep 1
 fi
 
-python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py &
+/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py &
 echo "Omarchy Planet restarted"

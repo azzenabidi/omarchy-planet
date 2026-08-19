@@ -44,8 +44,8 @@ if ! grep -q "omarchy-planet" "$BINDINGS_FILE" 2>/dev/null; then
     cat >> "$BINDINGS_FILE" << 'EOF'
 
 -- Omarchy Planet RPG tour
-o.bind("SUPER + ALT + P", "Omarchy Planet", "python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py")
-o.bind("SUPER + CTRL + P", "Omarchy Planet (Close)", "python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
+o.bind("SUPER + ALT + P", "Omarchy Planet", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py")
+o.bind("SUPER + CTRL + P", "Omarchy Planet (Close)", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
 EOF
     echo "Keybinds added: Super+Alt+P (toggle), Super+Ctrl+P (close)"
 else
