@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Omarchy Planet - GTK4+WebKitGTK layer-shell container."""
 import os
+import subprocess
 import sys
 from pathlib import Path
 from ctypes import CDLL
@@ -17,6 +18,20 @@ from gi.repository import Gtk4LayerShell as LayerShell
 GAME_DIR = Path('/home/azzen/.config/omarchy/plugins/omarchy-planet/game')
 PID_FILE = Path("/tmp/omarchy-planet.pid")
 VISIBLE_FILE = Path("/tmp/omarchy-planet-visible")
+
+
+def get_user_name():
+    try:
+        result = subprocess.run(
+            ["git", "config", "--global", "user.name"],
+            capture_output=True, text=True, timeout=5
+        )
+        name = result.stdout.strip()
+        if name:
+            return name
+    except Exception:
+        pass
+    return os.getenv("USER", "Traveler")
 
 
 class PlanetApp:
@@ -51,6 +66,11 @@ class PlanetApp:
         self.webview.load_uri(url)
         self.window.set_child(self.webview)
 
+        # Inject user name into page
+        user_name = get_user_name()
+        self.webview.connect("load-changed", lambda wv, event:
+            self.on_page_loaded(wv, event, user_name))
+
         # JS bridge
         ucm = self.webview.get_user_content_manager()
         ucm.register_script_message_handler("omarchy")
@@ -67,6 +87,12 @@ class PlanetApp:
         GLib.timeout_add(300, self.poll)
 
         self.window.present()
+
+    def on_page_loaded(self, webview, event, user_name):
+        # WebKit.LoadEvent.FINISHED = 4
+        if event == 4:
+            js = f"window.userName = '{user_name}';"
+            webview.run_javascript(js, None, None, None)
 
     def poll(self):
         if VISIBLE_FILE.exists():

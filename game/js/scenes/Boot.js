@@ -7,7 +7,47 @@ class Boot extends Phaser.Scene {
 
     create() {
         this.generateAsciiSprites();
-        this.scene.start('Village');
+        this.showWelcome();
+    }
+
+    showWelcome() {
+        const name = window.userName || 'Traveler';
+
+        // Terminal-style welcome screen
+        const bg = this.add.graphics();
+        bg.fillStyle(0x000000, 0.95);
+        bg.fillRect(0, 0, 1920, 1080);
+
+        const lines = [
+            { text: '> OMARCHY PLANET v1.0.0', y: 300, size: '24px', color: '#00ff00' },
+            { text: '> ─────────────────────────────────────────', y: 340, size: '16px', color: '#006600' },
+            { text: `> Welcome, ${name}!`, y: 400, size: '20px', color: '#00ff00' },
+            { text: '>', y: 440, size: '16px', color: '#00ff00' },
+            { text: '> You have been chosen to explore the lands of Omarchy.', y: 470, size: '16px', color: '#00aa00' },
+            { text: '> Talk to the villagers to learn the ways of this system.', y: 500, size: '16px', color: '#00aa00' },
+            { text: '>', y: 530, size: '16px', color: '#00ff00' },
+            { text: '> CONTROLS:', y: 570, size: '16px', color: '#ffff00' },
+            { text: '>   Click ground    - Move your character', y: 600, size: '14px', color: '#00cc00' },
+            { text: '>   Click NPC       - Talk to them', y: 630, size: '14px', color: '#00cc00' },
+            { text: '>   Click during dialog - Advance text', y: 660, size: '14px', color: '#00cc00' },
+            { text: '>', y: 690, size: '16px', color: '#00ff00' },
+            { text: '> Press Super+P to toggle this world on/off.', y: 720, size: '14px', color: '#008800' },
+            { text: '>', y: 760, size: '16px', color: '#00ff00' },
+            { text: '> [CLICK TO BEGIN]', y: 820, size: '18px', color: '#ffff00' },
+        ];
+
+        lines.forEach(line => {
+            this.add.text(960, line.y, line.text, {
+                fontSize: line.size,
+                fill: line.color,
+                fontFamily: 'monospace'
+            }).setOrigin(0.5);
+        });
+
+        // Click anywhere to start
+        this.input.once('pointerdown', () => {
+            this.scene.start('Village');
+        });
     }
 
     generateAsciiSprites() {
