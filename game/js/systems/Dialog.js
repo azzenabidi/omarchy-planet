@@ -56,7 +56,7 @@ class Dialog {
 
         // Click to continue
         scene.input.on('pointerdown', () => {
-            if (!this.isOpen || !planetActive) return;
+            if (!this.isOpen) return;
             this.advance();
         });
 
