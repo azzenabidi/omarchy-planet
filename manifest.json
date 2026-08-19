@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "author": "azzen",
   "license": "MIT",
-  "description": "An RPG-style interactive tour of Omarchy as your wallpaper",
+  "description": "An RPG-style interactive tour of Omarchy as your wallpaper. ASCII aesthetic with NPCs teaching keybinds and features.",
   "kinds": ["service"],
   "entryPoints": {
     "service": "planet.py"

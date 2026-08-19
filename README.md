@@ -14,31 +14,32 @@ An ASCII/terminal-aesthetic RPG that lives at the wallpaper layer behind your wi
 
 ## Installation
 
-### As an Omarchy Plugin
+### Option 1: Omarchy Plugin (Recommended)
 
 ```bash
-omarchy plugin add https://github.com/azzenabidi/omarchy-planet
+omarchy plugin add https://github.com/azzenabidi/omarchy-planet.git
 ```
 
-### Manual Installation
+Then run the install script to set up dependencies and keybindings:
+
+```bash
+~/.config/omarchy/plugins/omarchy-planet/install.sh
+hyprctl reload
+```
+
+### Option 2: Manual Installation
 
 1. Clone the repository:
 ```bash
 git clone https://github.com/azzenabidi/omarchy-planet ~/.config/omarchy/plugins/omarchy-planet
 ```
 
-2. Install dependencies:
+2. Run the install script:
 ```bash
-sudo pacman -S webkitgtk-6.0 python-gobject cairo gtk4-layer-shell
+~/.config/omarchy/plugins/omarchy-planet/install.sh
 ```
 
-3. Add keybinding to `~/.config/hypr/bindings.lua`:
-```lua
-o.bind("SUPER + P", "Omarchy Planet", "python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py")
-o.bind("SUPER + CTRL + P", "Omarchy Planet (Close)", "python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
-```
-
-4. Reload Hyprland:
+3. Reload Hyprland:
 ```bash
 hyprctl reload
 ```
@@ -106,7 +107,8 @@ omarchy-planet/
 ├── planet.py          # GTK4+WebKitGTK layer-shell container
 ├── toggle.py          # Start/toggle process
 ├── stop.py            # Kill process
-├── restart.sh         # Restart helper
+├── install.sh         # Installation script
+├── manifest.json      # Omarchy plugin manifest
 ├── game/
 │   ├── index.html     # Phaser.js entry point
 │   ├── data/
@@ -119,6 +121,14 @@ omarchy-planet/
 └── tests/
     └── test_planet.py # 50 tests
 ```
+
+## Requirements
+
+- Python 3
+- GTK4
+- WebKitGTK 6.0
+- gtk4-layer-shell
+- python-gobject
 
 ## License
 
