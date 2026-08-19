@@ -23,23 +23,24 @@ class PlanetApp:
     def __init__(self):
         self.app = Gtk.Application(application_id='com.omarchy.planet')
         self.app.connect('activate', self.on_activate)
+        self.window = None
         self.webview = None
         self.is_visible = False
         self.last_sig = ""
 
     def on_activate(self, app):
-        win = Gtk.ApplicationWindow(application=app)
-        win.set_default_size(1920, 1080)
-        win.set_decorated(False)
+        self.window = Gtk.ApplicationWindow(application=app)
+        self.window.set_default_size(1920, 1080)
+        self.window.set_decorated(False)
 
-        LayerShell.init_for_window(win)
-        LayerShell.set_layer(win, LayerShell.Layer.BACKGROUND)
-        LayerShell.set_namespace(win, "omarchy-planet")
-        LayerShell.set_keyboard_mode(win, LayerShell.KeyboardMode.NONE)
+        LayerShell.init_for_window(self.window)
+        LayerShell.set_layer(self.window, LayerShell.Layer.BACKGROUND)
+        LayerShell.set_namespace(self.window, "omarchy-planet")
+        LayerShell.set_keyboard_mode(self.window, LayerShell.KeyboardMode.NONE)
 
         for edge in [LayerShell.Edge.TOP, LayerShell.Edge.BOTTOM,
                      LayerShell.Edge.LEFT, LayerShell.Edge.RIGHT]:
-            LayerShell.set_anchor(win, edge, True)
+            LayerShell.set_anchor(self.window, edge, True)
 
         self.webview = WebKit.WebView()
         self.webview.set_background_color(Gdk.RGBA(0, 0, 0, 0))
@@ -48,7 +49,7 @@ class PlanetApp:
 
         url = f"file://{GAME_DIR}/index.html"
         self.webview.load_uri(url)
-        win.set_child(self.webview)
+        self.window.set_child(self.webview)
 
         # JS bridge
         ucm = self.webview.get_user_content_manager()
@@ -58,13 +59,14 @@ class PlanetApp:
         # Write PID
         PID_FILE.write_text(str(os.getpid()))
 
-        # Start invisible
+        # Start hidden
+        self.window.set_opacity(0.0)
         VISIBLE_FILE.write_text("no")
 
         # Poll for toggle every 300ms
         GLib.timeout_add(300, self.poll)
 
-        win.present()
+        self.window.present()
 
     def poll(self):
         if VISIBLE_FILE.exists():
@@ -77,10 +79,12 @@ class PlanetApp:
     def toggle(self):
         self.is_visible = not self.is_visible
         if self.is_visible:
+            self.window.set_opacity(1.0)
             VISIBLE_FILE.write_text("yes")
             self.webview.run_javascript(
                 "window.onPlanetActivate && window.onPlanetActivate()")
         else:
+            self.window.set_opacity(0.0)
             VISIBLE_FILE.write_text("no")
             self.webview.run_javascript(
                 "window.onPlanetDeactivate && window.onPlanetDeactivate()")
