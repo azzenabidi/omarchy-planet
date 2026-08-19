@@ -1,0 +1,164 @@
+scene,id,type,name,line,text,recommendation
+Village,elder,npc,Elder Omarch,1,"Welcome! I am Elder Omarch, keeper of workspaces.",
+Village,elder,npc,Elder Omarch,2,"Omarchy has 10 workspaces. Super+1 through Super+0 to jump.",
+Village,elder,npc,Elder Omarch,3,"Super+Tab cycles next, Super+Shift+Tab cycles previous.",
+Village,elder,npc,Elder Omarch,4,"Super+Ctrl+Tab returns to your former workspace.",
+Village,elder,npc,Elder Omarch,5,"Super+Shift+1-0 moves a window to another workspace (it follows).",
+Village,elder,npc,Elder Omarch,6,"Super+Shift+Alt+1-0 moves a window silently (stays on current).",
+Village,elder,npc,Elder Omarch,7,"Super+L toggles dwindle vs scrolling layout per-workspace.",
+Village,elder,npc,Elder Omarch,8,"Dwindle: all windows visible, shrinks to fit.",
+Village,elder,npc,Elder Omarch,9,"Scrolling: windows side-by-side beyond screen edge.",
+Village,elder,npc,Elder Omarch,10,"Super+S toggles the Scratchpad, a hidden overlay workspace.",
+Village,elder,npc,Elder Omarch,11,"Super+Alt+S sends a window to the scratchpad.",
+Village,elder,npc,Elder Omarch,12,"Super+G toggles window grouping. Grouped windows share tile space.",
+Village,elder,npc,Elder Omarch,13,"Super+Alt+Tab cycles windows within a group.",
+Village,elder,npc,Elder Omarch,14,"Super+Ctrl+Left/Right moves between grouped windows.",You now know navigation! Head to the Forest to learn all keybinds.
+Village,blacksmith,npc,Blacksmith Tiling,1,"I am the Blacksmith! I forge windows into place.",
+Village,blacksmith,npc,Blacksmith Tiling,2,"Windows tile automatically. Super+W closes focused window.",
+Village,blacksmith,npc,Blacksmith Tiling,3,"Super+T toggles tiling/floating mode.",
+Village,blacksmith,npc,Blacksmith Tiling,4,"Super+F fullscreen. Super+Ctrl+F tiled fullscreen.",
+Village,blacksmith,npc,Blacksmith Tiling,5,"Super+Alt+F full width (keeps top bar).",
+Village,blacksmith,npc,Blacksmith Tiling,6,"Super+O pops window out as a sticky float.",
+Village,blacksmith,npc,Blacksmith Tiling,7,"Super+J toggles split direction (horizontal/vertical).",
+Village,blacksmith,npc,Blacksmith Tiling,8,"Super+P toggles pseudo style (natural vs stretch).",
+Village,blacksmith,npc,Blacksmith Tiling,9,"Super+Arrow keys focus adjacent windows.",
+Village,blacksmith,npc,Blacksmith Tiling,10,"Super+Shift+Arrow swaps windows in that direction.",
+Village,blacksmith,npc,Blacksmith Tiling,11,"Resize: Super+Minus/Equal expands/shrinks left.",
+Village,blacksmith,npc,Blacksmith Tiling,12,"Super+Shift+Minus/Equal expands/shrinks up.",
+Village,blacksmith,npc,Blacksmith Tiling,13,"Add Alt for smaller steps, Ctrl for bigger steps.",
+Village,blacksmith,npc,Blacksmith Tiling,14,"Super+Alt+Home saves width, Super+Home restores.",
+Village,blacksmith,npc,Blacksmith Tiling,15,"Super+Ctrl+Backspace forces single window to square.",
+Village,blacksmith,npc,Blacksmith Tiling,16,"Super+Shift+Backspace toggles window gaps.",
+Village,blacksmith,npc,Blacksmith Tiling,17,"Super+Backspace toggles window transparency.",
+Village,blacksmith,npc,Blacksmith Tiling,18,"Super+Left drag moves window. Super+Right drag resizes.",
+Village,blacksmith,npc,Blacksmith Tiling,19,"Alt+Tab cycles windows on workspace.",
+Village,blacksmith,npc,Blacksmith Tiling,20,"Ctrl+Alt+Tab cycles focus through monitors.",
+Village,blacksmith,npc,Blacksmith Tiling,21,"Super+Ctrl+Delete toggles laptop display on/off.",
+Village,blacksmith,npc,Blacksmith Tiling,22,"Super+Ctrl+Alt+Delete mirrors displays.",Window mastery complete! Visit the Cave to configure your system.
+Village,merchant,npc,Merchant Theme,1,"I am Merchant Theme! I deal in beauty and system control.",
+Village,merchant,npc,Merchant Theme,2,"Super+Ctrl+Shift+Space opens the Theme picker (22 themes).",
+Village,merchant,npc,Merchant Theme,3,"Super+Ctrl+Space cycles theme backgrounds.",
+Village,merchant,npc,Merchant Theme,4,"Super+Shift+Space toggles the top bar on/off.",
+Village,merchant,npc,Merchant Theme,5,"Super+Ctrl+N toggles Night Light (blue filter).",
+Village,merchant,npc,Merchant Theme,6,"Super+Ctrl+I toggles idle lock (no auto-lock when off).",
+Village,merchant,npc,Merchant Theme,7,"Super+Ctrl+L locks the computer.",
+Village,merchant,npc,Merchant Theme,8,"Super+Space opens the Omarchy Menu (main hub).",
+Village,merchant,npc,Merchant Theme,9,"Super+Alt+Space opens the Apps Menu.",
+Village,merchant,npc,Merchant Theme,10,"Super+Escape opens System Menu (suspend, restart, etc.).",
+Village,merchant,npc,Merchant Theme,11,"Super+Ctrl+O opens the Toggle Menu.",
+Village,merchant,npc,Merchant Theme,12,"Super+Ctrl+H opens the Hardware Menu.",
+Village,merchant,npc,Merchant Theme,13,"Super+, dismisses notifications. Super+Shift+, dismiss all.",
+Village,merchant,npc,Merchant Theme,14,"Super+Ctrl+, toggles notification silencing.",
+Village,merchant,npc,Merchant Theme,15,"Super+Ctrl+R sets a reminder. Super+Ctrl+Alt+R sees all.",
+Village,merchant,npc,Merchant Theme,16,"Super+Ctrl+Alt+T shows time. Super+Ctrl+Alt+B shows battery.",Style and system mastered! Check out the Workshop for tools and themes.
+Forest,sign_launching,sign,Signpost,1,"LAUNCHING APPS:
+Super+Return: Terminal
+Super+Alt+Return: Tmux terminal
+Super+Shift+Return: Browser
+Super+Shift+Alt+B: Incognito browser
+Super+Shift+F: File Manager
+Super+Shift+N: Neovim",
+Forest,sign_more_apps,sign,Signpost,1,"MORE APPS:
+Super+Shift+M: Music (Spotify)
+Super+Shift+Alt+M: Music (cliamp)
+Super+Shift+D: Docker (LazyDocker)
+Super+Shift+O: Obsidian
+Super+Shift+X: X (Twitter)
+Super+Shift+Y: YouTube
+Super+Shift+S: Google Maps",
+Forest,sign_ai_comm,sign,Signpost,1,"AI & COMMUNICATION:
+Super+Shift+A: AI (ChatGPT)
+Super+Shift+Alt+A: AI (Grok)
+Super+Shift+G: Signal
+Super+Shift+Alt+G: WhatsApp
+Super+Shift+Ctrl+G: Messenger
+Super+Shift+E: Email (HEY)
+Super+Shift+C: Calendar (HEY)",
+Forest,sign_clipboard,sign,Signpost,1,"CLIPBOARD & INPUT:
+Super+C: Copy
+Super+X: Cut
+Super+V: Paste
+Super+Ctrl+V: Clipboard history
+Super+Ctrl+E: Emoji picker
+Super+Ctrl+Q: Calculator
+CapsLock+Space+Space: Em dash",
+Forest,sign_screenshots,sign,Signpost,1,"SCREENSHOTS & RECORDING:
+Print: Screenshot
+Alt+Print: Screen record (start/stop)
+Super+Print: Color picker
+Super+Ctrl+Print: OCR text extract
+Super+Ctrl+X: Start/stop dictation
+F9: Push-to-talk dictation
+Super+Ctrl+C: Capture menu",
+Forest,sign_notifications,sign,Signpost,1,"NOTIFICATIONS & REMINDERS:
+Super+,: Dismiss notification
+Super+Shift+,: Dismiss all
+Super+Ctrl+,: Silence notifications
+Super+Alt+,: Invoke last notification
+Super+Ctrl+R: Set reminder
+Super+Ctrl+Alt+R: See all reminders
+Super+Ctrl+Shift+R: Clear all reminders",
+Forest,sign_system_panels,sign,Signpost,1,"SYSTEM PANELS:
+Super+Ctrl+A: Audio
+Super+Ctrl+W: Network/WiFi
+Super+Ctrl+B: Bluetooth
+Super+Ctrl+D: Display
+Super+Ctrl+P: Power
+Super+Ctrl+Alt+D: Calendar
+Super+Ctrl+T: Activity monitor (btop)",
+SettingsCave,cave_guard,npc,Cave Guard,1,"Halt! This is the Cave of Settings.",
+SettingsCave,cave_guard,npc,Cave Guard,2,"Here you can configure every aspect of your system.",
+SettingsCave,cave_guard,npc,Cave Guard,3,"Click the entrance to open Display settings.",
+SettingsCave,cave_guard,npc,Cave Guard,4,"From Super+Space menu, access all settings:",
+SettingsCave,cave_guard,npc,Cave Guard,5,"Monitors, Keybindings, Input, Network DNS,",
+SettingsCave,cave_guard,npc,Cave Guard,6,"Default apps, Plugins, Security, and Hyprland config.",Settings explored! Return to the Village or visit the Workshop.
+SettingsCave,networker,npc,Network Keeper,1,"NETWORKING: NetworkManager backend.",
+SettingsCave,networker,npc,Network Keeper,2,"Super+Ctrl+W opens WiFi panel.",
+SettingsCave,networker,npc,Network Keeper,3,"nmtui for terminal network management.",
+SettingsCave,networker,npc,Network Keeper,4,"omarchy network password <iface> prints WiFi password.",
+SettingsCave,networker,npc,Network Keeper,5,"omarchy network speedtest down/up for speed tests.",
+SettingsCave,networker,npc,Network Keeper,6,"omarchy dns to see/set DNS (Cloudflare, Google, Custom).",
+SettingsCave,networker,npc,Network Keeper,7,"WiFi QR sharing: Setup > Network > QR Code.",
+SettingsCave,networker,npc,Network Keeper,8,"Firewall on by default, blocks incoming traffic.",
+SettingsCave,networker,npc,Network Keeper,9,"Tailscale available: Install > Service > Tailscale.",Network configured! Head to the Workshop to explore tools and themes.
+SettingsCave,display_keeper,npc,Display Keeper,1,"MONITORS: Auto-extend on connect.",
+SettingsCave,display_keeper,npc,Display Keeper,2,"Super+/ steps monitor scaling up (1x/1.25x/1.6x/2x/3x/4x).",
+SettingsCave,display_keeper,npc,Display Keeper,3,"Super+Alt+/ steps scaling down.",
+SettingsCave,display_keeper,npc,Display Keeper,4,"omarchy display text size <9-20> adjusts text.",
+SettingsCave,display_keeper,npc,Display Keeper,5,"Brightness keys adjust display brightness.",
+SettingsCave,display_keeper,npc,Display Keeper,6,"Shift+Brightness for max/min. Alt+Brightness for 1%.",
+SettingsCave,display_keeper,npc,Display Keeper,7,"Config: ~/.config/hypr/monitors.lua",
+SettingsCave,display_keeper,npc,Display Keeper,8,"Laptop display: Super+Ctrl+Delete toggles on/off.",
+SettingsCave,display_keeper,npc,Display Keeper,9,"Mirror displays: Super+Ctrl+Alt+Delete.",Display mastered! Return to the Village to continue your journey.
+Workshop,tinkerer,npc,Tinkerer,1,"Welcome to the Workshop! I am the Tinkerer.",
+Workshop,tinkerer,npc,Tinkerer,2,"22 built-in themes: Tokyo Night, Catppuccin, Gruvbox,",
+Workshop,tinkerer,npc,Tinkerer,3,"Nord, Rose Pine, Ethereal, Everforest, Hackerman,",
+Workshop,tinkerer,npc,Tinkerer,4,"Osaka Jade, Kanagawa, Lumon, Miasma, Matte Black,",
+Workshop,tinkerer,npc,Tinkerer,5,"Vantablack, Ristretto, Retro 82, Flexoki Light,",
+Workshop,tinkerer,npc,Tinkerer,6,"Catppuccin Latte, White, and more at omarchy.org/themes.",
+Workshop,tinkerer,npc,Tinkerer,7,"Each theme styles: desktop, terminal, neovim, btop,",
+Workshop,tinkerer,npc,Tinkerer,8,"Chromium, bar, menu, notifications, lock screen.",
+Workshop,tinkerer,npc,Tinkerer,9,"Custom backgrounds per theme in ~/.config/omarchy/backgrounds/.",
+Workshop,tinkerer,npc,Tinkerer,10,"More themes at omarchy.org/themes/",Themes explored! Talk to the Shell Master or Bar Master.
+Workshop,shell_master,npc,Shell Master,1,"SHELL TOOLS included in Omarchy:",
+Workshop,shell_master,npc,Shell Master,2,"fzf (ff): fuzzy find files with preview.",
+Workshop,shell_master,npc,Shell Master,3,"Ctrl+R: fuzzy search command history.",
+Workshop,shell_master,npc,Shell Master,4,"Zoxide: smart cd that remembers directories.",
+Workshop,shell_master,npc,Shell Master,5,"ripgrep (rg): fast content search.",
+Workshop,shell_master,npc,Shell Master,6,"eza: enhanced ls with icons (ls, lt, lsa, lta).",
+Workshop,shell_master,npc,Shell Master,7,"fd: easier find replacement.",
+Workshop,shell_master,npc,Shell Master,8,"bat: cat with syntax highlighting.",
+Workshop,shell_master,npc,Shell Master,9,"tldr: concise man page examples.",
+Workshop,shell_master,npc,Shell Master,10,"yt-dlp: download video from YouTube.",
+Workshop,shell_master,npc,Shell Master,11,"try: date-stamped experiment dirs in ~/Work/tries.",Tools mastered! Visit the Tinkerer or Bar Master next.
+Workshop,bar_master,npc,Bar Master,1,"THE BAR can be top, bottom, left, or right.",
+Workshop,bar_master,npc,Bar Master,2,"Super+Shift+Space toggles bar visibility.",
+Workshop,bar_master,npc,Bar Master,3,"Widgets: Menu, Workspaces, Clock, Weather, Audio,",
+Workshop,bar_master,npc,Bar Master,4,"Bluetooth, Network, Power, Display, Tray, Media.",
+Workshop,bar_master,npc,Bar Master,5,"Click Clock for calendar. Right-click to cycle format.",
+Workshop,bar_master,npc,Bar Master,6,"Click Audio for volume panel. Scroll for volume.",
+Workshop,bar_master,npc,Bar Master,7,"Click Weather for forecast popup.",
+Workshop,bar_master,npc,Bar Master,8,"Click Media for play/pause. Scroll for next/prev.",
+Workshop,bar_master,npc,Bar Master,9,"Configure in ~/.config/omarchy/shell.json.",
+Workshop,bar_master,npc,Bar Master,10,"omarchy bar position bottom/left/right/top.",
+Workshop,bar_master,npc,Bar Master,11,"omarchy bar defaults resets to shipped layout.",Bar configured! You have mastered the Workshop. Return to the Village!

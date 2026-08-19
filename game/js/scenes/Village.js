@@ -8,72 +8,7 @@ class Village extends Phaser.Scene {
         this.createMap();
 
         this.npcs = [];
-
-        // Elder Omarch - Navigation & Workspaces
-        const elder = new NPC(this, 400, 300, 'elder', 'Elder Omarch', [
-            'Welcome! I am Elder Omarch, keeper of workspaces.',
-            'Omarchy has 10 workspaces. Super+1 through Super+0 to jump.',
-            'Super+Tab cycles next, Super+Shift+Tab cycles previous.',
-            'Super+Ctrl+Tab returns to your former workspace.',
-            'Super+Shift+1-0 moves a window to another workspace (it follows).',
-            'Super+Shift+Alt+1-0 moves a window silently (stays on current).',
-            'Super+L toggles dwindle vs scrolling layout per-workspace.',
-            'Dwindle: all windows visible, shrinks to fit.',
-            'Scrolling: windows side-by-side beyond screen edge.',
-            'Super+S toggles the Scratchpad, a hidden overlay workspace.',
-            'Super+Alt+S sends a window to the scratchpad.',
-            'Super+G toggles window grouping. Grouped windows share tile space.',
-            'Super+Alt+Tab cycles windows within a group.',
-            'Super+Ctrl+Left/Right moves between grouped windows.'
-        ], 'You now know navigation! Head to the Forest to learn all keybinds.');
-
-        // Blacksmith Tiling - Window Management
-        const blacksmith = new NPC(this, 960, 400, 'blacksmith', 'Blacksmith Tiling', [
-            'I am the Blacksmith! I forge windows into place.',
-            'Windows tile automatically. Super+W closes focused window.',
-            'Super+T toggles tiling/floating mode.',
-            'Super+F fullscreen. Super+Ctrl+F tiled fullscreen.',
-            'Super+Alt+F full width (keeps top bar).',
-            'Super+O pops window out as a sticky float.',
-            'Super+J toggles split direction (horizontal/vertical).',
-            'Super+P toggles pseudo style (natural vs stretch).',
-            'Super+Arrow keys focus adjacent windows.',
-            'Super+Shift+Arrow swaps windows in that direction.',
-            'Resize: Super+Minus/Equal expands/shrinks left.',
-            'Super+Shift+Minus/Equal expands/shrinks up.',
-            'Add Alt for smaller steps, Ctrl for bigger steps.',
-            'Super+Alt+Home saves width, Super+Home restores.',
-            'Super+Ctrl+Backspace forces single window to square.',
-            'Super+Shift+Backspace toggles window gaps.',
-            'Super+Backspace toggles window transparency.',
-            'Super+Left drag moves window. Super+Right drag resizes.',
-            'Alt+Tab cycles windows on workspace.',
-            'Ctrl+Alt+Tab cycles focus through monitors.',
-            'Super+Ctrl+Delete toggles laptop display on/off.',
-            'Super+Ctrl+Alt+Delete mirrors displays.'
-        ], 'Window mastery complete! Visit the Cave to configure your system.');
-
-        // Merchant Theme - Themes, Style & System
-        const merchant = new NPC(this, 1500, 300, 'merchant', 'Merchant Theme', [
-            'I am Merchant Theme! I deal in beauty and system control.',
-            'Super+Ctrl+Shift+Space opens the Theme picker (22 themes).',
-            'Super+Ctrl+Space cycles theme backgrounds.',
-            'Super+Shift+Space toggles the top bar on/off.',
-            'Super+Ctrl+N toggles Night Light (blue filter).',
-            'Super+Ctrl+I toggles idle lock (no auto-lock when off).',
-            'Super+Ctrl+L locks the computer.',
-            'Super+Space opens the Omarchy Menu (main hub).',
-            'Super+Alt+Space opens the Apps Menu.',
-            'Super+Escape opens System Menu (suspend, restart, etc.).',
-            'Super+Ctrl+O opens the Toggle Menu.',
-            'Super+Ctrl+H opens the Hardware Menu.',
-            'Super+, dismisses notifications. Super+Shift+, dismiss all.',
-            'Super+Ctrl+, toggles notification silencing.',
-            'Super+Ctrl+R sets a reminder. Super+Ctrl+Alt+R sees all.',
-            'Super+Ctrl+Alt+T shows time. Super+Ctrl+Alt+B shows battery.'
-        ], 'Style and system mastered! Check out the Workshop for tools and themes.');
-
-        this.npcs = [elder, blacksmith, merchant];
+        this.createNPCs();
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);
 
@@ -92,6 +27,21 @@ class Village extends Phaser.Scene {
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
+    }
+
+    createNPCs() {
+        const npcData = DialogData.getNPCs('Village');
+        const positions = {
+            elder: { x: 400, y: 300, texture: 'elder' },
+            blacksmith: { x: 960, y: 400, texture: 'blacksmith' },
+            merchant: { x: 1500, y: 300, texture: 'merchant' }
+        };
+
+        npcData.forEach(npc => {
+            const pos = positions[npc.id] || { x: 960, y: 500, texture: 'elder' };
+            const npcObj = new NPC(this, pos.x, pos.y, pos.texture, npc.name, npc.lines, npc.recommendation);
+            this.npcs.push(npcObj);
+        });
     }
 
     createPortals() {

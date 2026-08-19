@@ -77,46 +77,24 @@ class Forest extends Phaser.Scene {
     }
 
     createSignposts() {
-        const signData = [
-            // Launching Apps
-            { x: 960, y: 150, text: 'LAUNCHING APPS:\nSuper+Return: Terminal\nSuper+Alt+Return: Tmux terminal\nSuper+Shift+Return: Browser\nSuper+Shift+Alt+B: Incognito browser\nSuper+Shift+F: File Manager\nSuper+Shift+N: Neovim' },
+        const signs = DialogData.getSigns('Forest');
+        const yPositions = [150, 280, 410, 540, 670, 800, 930];
 
-            // More Apps
-            { x: 960, y: 280, text: 'MORE APPS:\nSuper+Shift+M: Music (Spotify)\nSuper+Shift+Alt+M: Music (cliamp)\nSuper+Shift+D: Docker (LazyDocker)\nSuper+Shift+O: Obsidian\nSuper+Shift+X: X (Twitter)\nSuper+Shift+Y: YouTube\nSuper+Shift+S: Google Maps' },
+        signs.forEach((sign, index) => {
+            const y = yPositions[index] || 150 + index * 130;
+            const signSprite = this.add.image(960, y, 'sign');
+            signSprite.setInteractive({ useHandCursor: true });
+            signSprite.setScale(1.5);
 
-            // AI & Communication
-            { x: 960, y: 410, text: 'AI & COMMUNICATION:\nSuper+Shift+A: AI (ChatGPT)\nSuper+Shift+Alt+A: AI (Grok)\nSuper+Shift+G: Signal\nSuper+Shift+Alt+G: WhatsApp\nSuper+Shift+Ctrl+G: Messenger\nSuper+Shift+E: Email (HEY)\nSuper+Shift+C: Calendar (HEY)' },
-
-            // Clipboard & Input
-            { x: 960, y: 540, text: 'CLIPBOARD & INPUT:\nSuper+C: Copy\nSuper+X: Cut\nSuper+V: Paste\nSuper+Ctrl+V: Clipboard history\nSuper+Ctrl+E: Emoji picker\nSuper+Ctrl+Q: Calculator\nCapsLock+Space+Space: Em dash' },
-
-            // Screenshots & Recording
-            { x: 960, y: 670, text: 'SCREENSHOTS & RECORDING:\nPrint: Screenshot\nAlt+Print: Screen record (start/stop)\nSuper+Print: Color picker\nSuper+Ctrl+Print: OCR text extract\nSuper+Ctrl+X: Start/stop dictation\nF9: Push-to-talk dictation\nSuper+Ctrl+C: Capture menu' },
-
-            // Notifications & Reminders
-            { x: 960, y: 800, text: 'NOTIFICATIONS & REMINDERS:\nSuper+,: Dismiss notification\nSuper+Shift+,: Dismiss all\nSuper+Ctrl+,: Silence notifications\nSuper+Alt+,: Invoke last notification\nSuper+Ctrl+R: Set reminder\nSuper+Ctrl+Alt+R: See all reminders\nSuper+Ctrl+Shift+R: Clear all reminders' },
-
-            // System Panels
-            { x: 960, y: 930, text: 'SYSTEM PANELS:\nSuper+Ctrl+A: Audio\nSuper+Ctrl+W: Network/WiFi\nSuper+Ctrl+B: Bluetooth\nSuper+Ctrl+D: Display\nSuper+Ctrl+P: Power\nSuper+Ctrl+Alt+D: Calendar\nSuper+Ctrl+T: Activity monitor (btop)' }
-        ];
-
-        signData.forEach(data => {
-            const sign = this.add.image(data.x, data.y, 'sign');
-            sign.setInteractive({ useHandCursor: true });
-            sign.setScale(1.5);
-
-            const label = this.add.text(data.x, data.y - 30, '[SIGN]', {
+            const label = this.add.text(960, y - 30, '[SIGN]', {
                 fontSize: '10px',
                 fill: '#00ff00',
                 fontFamily: 'monospace'
             }).setOrigin(0.5);
 
-            sign.on('pointerdown', () => {
-                this.dialog.show('Signpost', data.text);
+            signSprite.on('pointerdown', () => {
+                this.dialog.show('Signpost', sign.lines[0]);
             });
-
-            this.signs = this.signs || [];
-            this.signs.push({ sign, label, data });
         });
     }
 

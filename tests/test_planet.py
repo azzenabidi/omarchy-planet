@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Comprehensive tests for Omarchy Planet."""
+import csv
 import json
 import os
 import sys
@@ -201,7 +202,7 @@ def test_pid_file_empty():
 
 
 # ============================================================
-# is_running tests
+# Process detection tests
 # ============================================================
 def test_is_running_self():
     assert_true(is_running(os.getpid()))
@@ -212,13 +213,12 @@ def test_is_running_invalid_pid():
 
 
 def test_is_running_negative():
-    # Negative PID checks process group, may return True on some systems
     result = is_running(-1)
     assert isinstance(result, bool)
 
 
 # ============================================================
-# Dialog box height tests
+# Dialog box tests
 # ============================================================
 def test_dialog_box_min_height():
     min_height = 180
@@ -237,7 +237,7 @@ def test_dialog_box_resize():
 
 
 # ============================================================
-# Scene names tests
+# Scene structure tests
 # ============================================================
 def test_scene_names():
     scenes = ['Boot', 'Village', 'Forest', 'SettingsCave', 'Workshop']
@@ -249,9 +249,6 @@ def test_scene_names():
     assert_in('Boot', scenes)
 
 
-# ============================================================
-# File structure tests
-# ============================================================
 def test_game_files_exist():
     base = Path(__file__).parent.parent / 'game'
     assert_true((base / 'index.html').exists())
@@ -264,6 +261,7 @@ def test_game_files_exist():
     assert_true((base / 'js' / 'entities' / 'Player.js').exists())
     assert_true((base / 'js' / 'entities' / 'NPC.js').exists())
     assert_true((base / 'js' / 'systems' / 'Dialog.js').exists())
+    assert_true((base / 'js' / 'systems' / 'DialogData.js').exists())
     assert_true((base / 'js' / 'systems' / 'Bridge.js').exists())
 
 
@@ -273,10 +271,84 @@ def test_python_files_exist():
     assert_true((base / 'toggle.py').exists())
     assert_true((base / 'stop.py').exists())
     assert_true((base / 'restart.sh').exists())
+    assert_true((base / 'game' / 'data' / 'dialog.csv').exists())
 
 
 # ============================================================
-# JS syntax validation (basic check)
+# CSV dialog file tests
+# ============================================================
+def test_csv_exists():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    assert_true(csv_path.exists())
+
+
+def test_csv_has_headers():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    with open(csv_path) as f:
+        reader = csv.reader(f)
+        headers = next(reader)
+    assert_eq(headers, ['scene', 'id', 'type', 'name', 'line', 'text', 'recommendation'])
+
+
+def test_csv_has_content():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    assert_true(len(rows) > 50)
+
+
+def test_csv_has_all_scenes():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    scenes = set()
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            scenes.add(row['scene'])
+    assert_in('Village', scenes)
+    assert_in('Forest', scenes)
+    assert_in('SettingsCave', scenes)
+    assert_in('Workshop', scenes)
+
+
+def test_csv_has_npc_and_signs():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    types = set()
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            types.add(row['type'])
+    assert_in('npc', types)
+    assert_in('sign', types)
+
+
+def test_csv_village_npcs():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    npcs = set()
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['scene'] == 'Village' and row['type'] == 'npc':
+                npcs.add(row['id'])
+    assert_in('elder', npcs)
+    assert_in('blacksmith', npcs)
+    assert_in('merchant', npcs)
+
+
+def test_csv_recommendations():
+    csv_path = Path(__file__).parent.parent / 'game' / 'data' / 'dialog.csv'
+    has_rec = False
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['recommendation']:
+                has_rec = True
+                break
+    assert_true(has_rec)
+
+
+# ============================================================
+# JS validation tests
 # ============================================================
 def test_js_no_syntax_errors():
     """Check JS files for obvious syntax issues."""
@@ -291,6 +363,7 @@ def test_js_no_syntax_errors():
         'entities/Player.js',
         'entities/NPC.js',
         'systems/Dialog.js',
+        'systems/DialogData.js',
         'systems/Bridge.js'
     ]
     for f in js_files:
@@ -323,6 +396,13 @@ def test_js_classes_defined():
     assert_in('class Player', player)
     assert_in('moveTo(', player)
 
+    dialog_data = (base / 'systems' / 'DialogData.js').read_text()
+    assert_in('DialogData', dialog_data)
+    assert_in('load()', dialog_data)
+    assert_in('parse(', dialog_data)
+    assert_in('getNPCs(', dialog_data)
+    assert_in('getSigns(', dialog_data)
+
 
 def test_bridge_commands():
     """Check Bridge has all required commands."""
@@ -342,7 +422,7 @@ def test_npc_has_recommendation():
 
 
 # ============================================================
-# Python syntax validation
+# Python syntax tests
 # ============================================================
 def test_python_syntax():
     """Check Python files for syntax errors."""
@@ -354,39 +434,34 @@ def test_python_syntax():
 
 
 # ============================================================
-# NPC dialog content tests
+# Scene content tests (now loading from CSV)
 # ============================================================
-def test_village_npcs_have_dialog():
-    """Check Village.js has NPC definitions with dialog."""
+def test_village_loads_from_csv():
+    """Check Village.js uses DialogData."""
     village = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'Village.js').read_text()
-    assert_in('Elder Omarch', village)
-    assert_in('Blacksmith Tiling', village)
-    assert_in('Merchant Theme', village)
-    assert_in('Forest to learn', village)
+    assert_in('DialogData.getNPCs', village)
+    assert_in('createNPCs', village)
 
 
-def test_forest_signs_exist():
-    """Check Forest.js has sign definitions."""
+def test_forest_loads_from_csv():
+    """Check Forest.js uses DialogData."""
     forest = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'Forest.js').read_text()
-    assert_in('signData', forest)
-    assert_in('Super+Return', forest)
-    assert_in('LAUNCHING APPS', forest)
+    assert_in('DialogData.getSigns', forest)
+    assert_in('createSignposts', forest)
 
 
-def test_settings_cave_npcs():
-    """Check SettingsCave.js has NPC definitions."""
+def test_settings_cave_loads_from_csv():
+    """Check SettingsCave.js uses DialogData."""
     cave = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'SettingsCave.js').read_text()
-    assert_in('Cave Guard', cave)
-    assert_in('Network Keeper', cave)
-    assert_in('Display Keeper', cave)
+    assert_in('DialogData.getNPCs', cave)
+    assert_in('createNPCs', cave)
 
 
-def test_workshop_npcs():
-    """Check Workshop.js has NPC definitions."""
+def test_workshop_loads_from_csv():
+    """Check Workshop.js uses DialogData."""
     workshop = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'Workshop.js').read_text()
-    assert_in('Tinkerer', workshop)
-    assert_in('Shell Master', workshop)
-    assert_in('Bar Master', workshop)
+    assert_in('DialogData.getNPCs', workshop)
+    assert_in('createNPCs', workshop)
 
 
 # ============================================================
@@ -527,6 +602,15 @@ if __name__ == '__main__':
     test("game files exist", test_game_files_exist)
     test("python files exist", test_python_files_exist)
 
+    print("\n--- CSV Dialog File ---")
+    test("csv exists", test_csv_exists)
+    test("csv has headers", test_csv_has_headers)
+    test("csv has content", test_csv_has_content)
+    test("csv has all scenes", test_csv_has_all_scenes)
+    test("csv has npc and signs", test_csv_has_npc_and_signs)
+    test("csv village npcs", test_csv_village_npcs)
+    test("csv has recommendations", test_csv_recommendations)
+
     print("\n--- JavaScript Validation ---")
     test("no syntax errors", test_js_no_syntax_errors)
     test("classes defined", test_js_classes_defined)
@@ -536,11 +620,11 @@ if __name__ == '__main__':
     print("\n--- Python Validation ---")
     test("python syntax", test_python_syntax)
 
-    print("\n--- NPC Content ---")
-    test("village npcs have dialog", test_village_npcs_have_dialog)
-    test("forest signs exist", test_forest_signs_exist)
-    test("settings cave npcs", test_settings_cave_npcs)
-    test("workshop npcs", test_workshop_npcs)
+    print("\n--- Scene Content (CSV-based) ---")
+    test("village loads from csv", test_village_loads_from_csv)
+    test("forest loads from csv", test_forest_loads_from_csv)
+    test("settings cave loads from csv", test_settings_cave_loads_from_csv)
+    test("workshop loads from csv", test_workshop_loads_from_csv)
 
     print("\n--- Navigation ---")
     test("village has portals", test_village_has_portals)

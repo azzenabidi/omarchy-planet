@@ -3,11 +3,21 @@ class Boot extends Phaser.Scene {
         super('Boot');
     }
 
-    preload() {}
+    preload() {
+        // Load dialog data from CSV
+        this.load.script('dialogData', 'js/systems/DialogData.js');
+    }
 
     create() {
         this.generateAsciiSprites();
-        this.showWelcome();
+
+        // Load dialog data then show welcome
+        DialogData.load().then(() => {
+            this.showWelcome();
+        }).catch(() => {
+            // Fallback if CSV fails to load
+            this.showWelcome();
+        });
     }
 
     showWelcome() {

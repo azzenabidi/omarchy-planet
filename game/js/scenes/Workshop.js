@@ -7,49 +7,7 @@ class Workshop extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#221100');
         this.createMap();
         this.createWorkshop();
-
-        this.tinkerer = new NPC(this, 400, 300, 'merchant', 'Tinkerer', [
-            'Welcome to the Workshop! I am the Tinkerer.',
-            '22 built-in themes: Tokyo Night, Catppuccin, Gruvbox,',
-            'Nord, Rose Pine, Ethereal, Everforest, Hackerman,',
-            'Osaka Jade, Kanagawa, Lumon, Miasma, Matte Black,',
-            'Vantablack, Ristretto, Retro 82, Flexoki Light,',
-            'Catppuccin Latte, White, and more at omarchy.org/themes.',
-            'Each theme styles: desktop, terminal, neovim, btop,',
-            'Chromium, bar, menu, notifications, lock screen.',
-            'Custom backgrounds per theme in ~/.config/omarchy/backgrounds/.',
-            'More themes at omarchy.org/themes/'
-        ], 'Themes explored! Talk to the Shell Master or Bar Master.');
-
-        // Shell Tools NPC
-        const shellNpc = new NPC(this, 1400, 300, 'elder', 'Shell Master', [
-            'SHELL TOOLS included in Omarchy:',
-            'fzf (ff): fuzzy find files with preview.',
-            'Ctrl+R: fuzzy search command history.',
-            'Zoxide: smart cd that remembers directories.',
-            'ripgrep (rg): fast content search.',
-            'eza: enhanced ls with icons (ls, lt, lsa, lta).',
-            'fd: easier find replacement.',
-            'bat: cat with syntax highlighting.',
-            'tldr: concise man page examples.',
-            'yt-dlp: download video from YouTube.',
-            'try: date-stamped experiment dirs in ~/Work/tries.'
-        ], 'Tools mastered! Visit the Tinkerer or Bar Master next.');
-
-        // Bar & Widgets NPC
-        const barNpc = new NPC(this, 900, 500, 'blacksmith', 'Bar Master', [
-            'THE BAR can be top, bottom, left, or right.',
-            'Super+Shift+Space toggles bar visibility.',
-            'Widgets: Menu, Workspaces, Clock, Weather, Audio,',
-            'Bluetooth, Network, Power, Display, Tray, Media.',
-            'Click Clock for calendar. Right-click to cycle format.',
-            'Click Audio for volume panel. Scroll for volume.',
-            'Click Weather for forecast popup.',
-            'Click Media for play/pause. Scroll for next/prev.',
-            'Configure in ~/.config/omarchy/shell.json.',
-            'omarchy bar position bottom/left/right/top.',
-            'omarchy bar defaults resets to shipped layout.'
-        ], 'Bar configured! You have mastered the Workshop. Return to the Village!');
+        this.createNPCs();
 
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);
@@ -86,6 +44,20 @@ class Workshop extends Phaser.Scene {
 
         returnPortal.on('pointerdown', () => {
             this.scene.start('Village');
+        });
+    }
+
+    createNPCs() {
+        const npcData = DialogData.getNPCs('Workshop');
+        const positions = {
+            tinkerer: { x: 400, y: 300, texture: 'merchant' },
+            shell_master: { x: 1400, y: 300, texture: 'elder' },
+            bar_master: { x: 900, y: 500, texture: 'blacksmith' }
+        };
+
+        npcData.forEach(npc => {
+            const pos = positions[npc.id] || { x: 960, y: 500, texture: 'elder' };
+            new NPC(this, pos.x, pos.y, pos.texture, npc.name, npc.lines, npc.recommendation);
         });
     }
 

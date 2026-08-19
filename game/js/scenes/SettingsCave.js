@@ -7,41 +7,7 @@ class SettingsCave extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#111111');
         this.createMap();
         this.createCaveEntrance();
-
-        this.guard = new NPC(this, 960, 350, 'blacksmith', 'Cave Guard', [
-            'Halt! This is the Cave of Settings.',
-            'Here you can configure every aspect of your system.',
-            'Click the entrance to open Display settings.',
-            'From Super+Space menu, access all settings:',
-            'Monitors, Keybindings, Input, Network DNS,',
-            'Default apps, Plugins, Security, and Hyprland config.'
-        ], 'Settings explored! Return to the Village or visit the Workshop.');
-
-        // Network & System NPC
-        const networker = new NPC(this, 400, 500, 'merchant', 'Network Keeper', [
-            'NETWORKING: NetworkManager backend.',
-            'Super+Ctrl+W opens WiFi panel.',
-            'nmtui for terminal network management.',
-            'omarchy network password <iface> prints WiFi password.',
-            'omarchy network speedtest down/up for speed tests.',
-            'omarchy dns to see/set DNS (Cloudflare, Google, Custom).',
-            'WiFi QR sharing: Setup > Network > QR Code.',
-            'Firewall on by default, blocks incoming traffic.',
-            'Tailscale available: Install > Service > Tailscale.'
-        ], 'Network configured! Head to the Workshop to explore tools and themes.');
-
-        // Monitor & Display NPC
-        const displayKeeper = new NPC(this, 1500, 500, 'elder', 'Display Keeper', [
-            'MONITORS: Auto-extend on connect.',
-            'Super+/ steps monitor scaling up (1x/1.25x/1.6x/2x/3x/4x).',
-            'Super+Alt+/ steps scaling down.',
-            'omarchy display text size <9-20> adjusts text.',
-            'Brightness keys adjust display brightness.',
-            'Shift+Brightness for max/min. Alt+Brightness for 1%.',
-            'Config: ~/.config/hypr/monitors.lua',
-            'Laptop display: Super+Ctrl+Delete toggles on/off.',
-            'Mirror displays: Super+Ctrl+Alt+Delete.'
-        ], 'Display mastered! Return to the Village to continue your journey.');
+        this.createNPCs();
 
         this.player = new Player(this, 960, 100);
         this.dialog = new Dialog(this);
@@ -72,6 +38,20 @@ class SettingsCave extends Phaser.Scene {
 
         returnPortal.on('pointerdown', () => {
             this.scene.start('Village');
+        });
+    }
+
+    createNPCs() {
+        const npcData = DialogData.getNPCs('SettingsCave');
+        const positions = {
+            cave_guard: { x: 960, y: 350, texture: 'blacksmith' },
+            networker: { x: 400, y: 500, texture: 'merchant' },
+            display_keeper: { x: 1500, y: 500, texture: 'elder' }
+        };
+
+        npcData.forEach(npc => {
+            const pos = positions[npc.id] || { x: 960, y: 500, texture: 'elder' };
+            new NPC(this, pos.x, pos.y, pos.texture, npc.name, npc.lines, npc.recommendation);
         });
     }
 
