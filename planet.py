@@ -49,8 +49,6 @@ class PlanetApp:
         LayerShell.init_for_window(self.window)
         LayerShell.set_layer(self.window, LayerShell.Layer.BOTTOM)
         LayerShell.set_namespace(self.window, "omarchy-planet")
-        LayerShell.set_keyboard_mode(self.window, LayerShell.KeyboardMode.NONE)
-        LayerShell.set_exclusive_zone(self.window, -1)
 
         for edge in [LayerShell.Edge.TOP, LayerShell.Edge.BOTTOM,
                      LayerShell.Edge.LEFT, LayerShell.Edge.RIGHT]:
@@ -78,9 +76,8 @@ class PlanetApp:
         # Write PID
         PID_FILE.write_text(str(os.getpid()))
 
-        # Start hidden
-        self.window.set_opacity(0.0)
-        VISIBLE_FILE.write_text("no")
+        # Start visible (toggle hides it)
+        VISIBLE_FILE.write_text("yes")
 
         # Poll for toggle every 300ms
         GLib.timeout_add(300, self.poll)
