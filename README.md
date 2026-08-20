@@ -175,6 +175,72 @@ omarchy-planet/
     └── test_planet.py # 50 tests
 ```
 
+## How This Was Built
+
+### Why?
+
+Omarchy is powerful but overwhelming for newcomers. The manual is great, but reading about keybinds isn't the same as discovering them. I wanted to create an interactive, fun way to learn Omarchy — an RPG that teaches you the system while you explore.
+
+The idea: a terminal-aesthetic game that sits behind your windows like a living wallpaper. You click NPCs to learn keybinds, visit a forest of signposts, explore a cave for system settings, and workshop for tools. It's learn-by-doing, but for your entire desktop.
+
+### Why These Technologies?
+
+**GTK4 + WebKitGTK + Layer Shell (Python)**
+
+Omarchy runs on Hyprland, a Wayland compositor. To sit behind windows, you need the [wlr-layer-shell protocol](https://wayland.app/protocols/wlr-layer-shell-unstable-v1). The only mature Python binding is `gtk4-layer-shell`, which pairs with GTK4 and WebKitGTK to render a web page as a layer surface.
+
+Why not a native Wayland client? Because building an RPG engine from scratch in C would take months. WebKitGTK gives us a full browser engine — HTML5 Canvas, JavaScript, the works — inside a layer shell window. We get the best of both worlds: system-level window placement with web-level UI flexibility.
+
+**Phaser.js (HTML5 Canvas)**
+
+Phaser is a battle-tested 2D game engine. It handles sprites, scenes, input, physics, and tweens — everything needed for a simple RPG. Running inside WebKitGTK, it's just a web page. No plugins, no npm, no build step. Open `index.html` and it works.
+
+**Why Python for the container?**
+
+Python was the pragmatic choice:
+- `gi` (GObject Introspection) bindings for GTK4 and WebKitGTK are mature on Arch Linux
+- `gtk4-layer-shell` has Python bindings via `gi.require_version('Gtk4LayerShell', '1.0')`
+- No compilation needed — just `pacman -S` the dependencies and run
+- Easy to prototype, debug, and maintain
+
+### Architecture Decisions
+
+**The toggle problem**
+
+Layer shell windows persist forever. To show/hide, we use a file-based signal (`/tmp/omarchy-planet-visible`). `toggle.py` writes "yes" or "no", `planet.py` polls every 300ms and sets window opacity accordingly. This avoids IPC complexity — just a file read/write between two processes.
+
+**Why `LD_PRELOAD`?**
+
+`gtk4-layer-shell` must be loaded before `libwayland-client` at process start. The `CDLL()` call in Python happens too late. Setting `LD_PRELOAD=/usr/lib/libgtk4-layer-shell.so` in the environment is the only reliable way to make layer shell work.
+
+**BOTTOM layer, not BACKGROUND**
+
+The Wayland layer-shell BACKGROUND layer doesn't receive pointer events by default — compositors assume background surfaces are non-interactive. We use the BOTTOM layer instead, which sits behind regular windows but still receives mouse clicks. Combined with `set_exclusive_zone(-1)`, the game doesn't reserve screen space.
+
+**CSV-based dialog**
+
+I wanted the community to contribute content without touching JavaScript. A CSV file (`dialog.csv`) with columns `scene,id,type,name,line,text,recommendation` lets anyone add NPCs or signs. The parser loads at boot, with hardcoded fallback data if the file fails to load (WebKitGTK's `fetch()` doesn't always work on `file://` protocol).
+
+**No keyboard input**
+
+Layer shell windows in `KeyboardMode.NONE` don't receive keyboard events. This is intentional — the game shouldn't steal keys from your terminal. All interaction is click-based: click to move, click NPCs, click dialog to advance.
+
+**ASCII sprites via canvas**
+
+Rather than shipping image assets, all sprites are generated at runtime using HTML5 Canvas. The `@` character is the player, `O` is the Elder, `#` is the Blacksmith, `$` is the Merchant. This keeps the pixel count tiny and reinforces the terminal aesthetic.
+
+### Key Learnings
+
+1. **Wayland layer shell is finicky.** Getting pointer events to work required switching from BACKGROUND to BOTTOM layer. Documentation is sparse — most answers come from reading Wayland protocol specs.
+
+2. **`fetch()` on `file://` is unreliable.** WebKitGTK blocks cross-origin requests even for local files. Always have an XXHR fallback.
+
+3. **`LD_PRELOAD` is required for gtk4-layer-shell.** The `CDLL()` approach doesn't work because the library must be loaded before libwayland-client.
+
+4. **Phaser.js in WebKitGTK works surprisingly well.** Full Canvas/WebGL support, mouse events, tweens — everything just works inside the embedded browser.
+
+5. **File-based IPC is underrated.** A 3-byte file (`yes`/`no`) is all you need to toggle a layer shell window. No sockets, no dbus, no complexity.
+
 ## Requirements
 
 - Python 3
