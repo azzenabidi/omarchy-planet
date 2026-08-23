@@ -12,6 +12,9 @@ class Village extends Phaser.Scene {
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);
 
+        // Switch from title theme to the overworld theme
+        Chiptune.play('game');
+
         // Portals
         this.createPortals();
 

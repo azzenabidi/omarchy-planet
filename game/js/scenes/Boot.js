@@ -22,6 +22,11 @@ class Boot extends Phaser.Scene {
     showWelcome() {
         const name = window.userName || 'Traveler';
 
+        // Title theme (starts immediately if autoplay is allowed,
+        // otherwise on the first click via the global unlock listener)
+        Chiptune.play('title');
+        Chiptune.unlock();
+
         // Terminal-style welcome screen
         const bg = this.add.graphics();
         bg.fillStyle(0x000000, 0.95);

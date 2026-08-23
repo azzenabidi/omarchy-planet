@@ -4,22 +4,51 @@ const Chiptune = {
     noiseBuf: null,
     playing: false,
     muted: false,
+    trackName: null,
 
-    tempo: 118,
     step: 0,
     nextTime: 0,
     timer: null,
 
-    // 16th-note melody (MIDI notes, 0 = rest)
-    lead: [
-        76, 0, 79, 0, 81, 0, 79, 0, 76, 0, 74, 0, 72, 0, 74, 0,
-        76, 0, 79, 0, 81, 0, 84, 0, 83, 0, 81, 0, 79, 0, 76, 0
-    ],
-    // Bass root per quarter note (Am F C G)
-    bassRoots: [45, 45, 41, 41, 48, 48, 43, 43],
+    tracks: {
+        // Calm arpeggio for the welcome screen
+        title: {
+            tempo: 84,
+            leadType: 'triangle', leadDur: 0.30, leadVol: 0.05,
+            bassEvery: 8, bassDur: 0.50, bassVol: 0.09,
+            hat: false,
+            lead: [
+                69, 0, 72, 0, 76, 0, 72, 0, 81, 0, 76, 0, 79, 0, 76, 0,
+                65, 0, 69, 0, 72, 0, 69, 0, 77, 0, 72, 0, 76, 0, 72, 0
+            ],
+            bassRoots: [45, 41]
+        },
+        // Upbeat overworld theme
+        game: {
+            tempo: 118,
+            leadType: 'square', leadDur: 0.16, leadVol: 0.055,
+            bassEvery: 4, bassDur: 0.30, bassVol: 0.10,
+            hat: true,
+            lead: [
+                76, 0, 79, 0, 81, 0, 79, 0, 76, 0, 74, 0, 72, 0, 74, 0,
+                76, 0, 79, 0, 81, 0, 84, 0, 83, 0, 81, 0, 79, 0, 76, 0
+            ],
+            bassRoots: [45, 45, 41, 41, 48, 48, 43, 43]
+        }
+    },
 
     freq(midi) {
         return 440 * Math.pow(2, (midi - 69) / 12);
+    },
+
+    track() {
+        return this.tracks[this.trackName] || this.tracks.game;
+    },
+
+    play(name) {
+        if (this.trackName === name) return;
+        this.trackName = name;
+        this.step = 0;
     },
 
     unlock() {
@@ -35,37 +64,62 @@ const Chiptune = {
             this.noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
             const data = this.noiseBuf.getChannelData(0);
             for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+            const check = () => {
+                if (this.ctx.state === 'running' && !this.playing && !this.muted && this.trackName) {
+                    this.start();
+                }
+            };
+            this.ctx.onstatechange = check;
+            check();
+        } else {
+            this.ensureRunning();
         }
         if (this.ctx.state === 'suspended') this.ctx.resume();
-        if (!this.playing && !this.muted) this.start();
+        this.ensureRunning();
+    },
+
+    ensureRunning() {
+        if (this.ctx && this.ctx.state === 'running' && !this.playing && !this.muted && this.trackName) {
+            this.start();
+        }
     },
 
     start() {
-        if (this.playing || !this.ctx) return;
+        if (this.playing || !this.ctx || this.ctx.state !== 'running') return;
         this.playing = true;
         this.nextTime = this.ctx.currentTime + 0.06;
         this.timer = setInterval(() => this.schedule(), 25);
     },
 
+    stopLoop() {
+        this.playing = false;
+        if (this.timer) clearInterval(this.timer);
+        this.timer = null;
+    },
+
     schedule() {
-        const stepDur = 60 / this.tempo / 4;
+        if (!this.playing) return;
+        const stepDur = 60 / this.track().tempo / 4;
         while (this.nextTime < this.ctx.currentTime + 0.12) {
-            this.playStep(this.step % 32, this.nextTime);
+            this.playStep(this.step % this.track().lead.length, this.nextTime);
             this.step++;
             this.nextTime += stepDur;
         }
     },
 
     playStep(s, t) {
-        const lead = this.lead[s];
-        if (lead) this.blip('square', this.freq(lead), t, 0.16, 0.055);
+        const tr = this.track();
 
-        if (s % 4 === 0) {
-            const root = this.bassRoots[(s / 4) | 0];
-            this.blip('triangle', this.freq(root), t, 0.30, 0.10);
+        const note = tr.lead[s];
+        if (note) this.blip(tr.leadType, this.freq(note), t, tr.leadDur, tr.leadVol);
+
+        if (s % tr.bassEvery === 0) {
+            const root = tr.bassRoots[(s / tr.bassEvery) % tr.bassRoots.length | 0];
+            this.blip('triangle', this.freq(root), t, tr.bassDur, tr.bassVol);
         }
 
-        if (s % 4 === 2) this.hat(t);
+        if (tr.hat && s % 4 === 2) this.hat(t);
     },
 
     blip(type, freq, t, dur, vol) {
@@ -105,20 +159,14 @@ const Chiptune = {
             this.stopLoop();
         } else {
             this.master.gain.value = 0.14;
-            if (this.ctx.state === 'running') this.start();
+            this.ensureRunning();
         }
         return this.muted;
     },
 
-    stopLoop() {
-        this.playing = false;
-        if (this.timer) clearInterval(this.timer);
-        this.timer = null;
-    },
-
     resume() {
         if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-        if (this.ctx && !this.playing && !this.muted) this.start();
+        this.ensureRunning();
     },
 
     suspend() {
