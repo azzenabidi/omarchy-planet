@@ -46,6 +46,10 @@ def assert_in(item, collection):
     assert item in collection, f"Expected {item!r} in collection"
 
 
+def assert_not_in(item, collection):
+    assert item not in collection, f"Expected {item!r} NOT in collection"
+
+
 def assert_raises(exc_type, fn, *args):
     try:
         fn(*args)
@@ -422,6 +426,97 @@ def test_npc_has_recommendation():
 
 
 # ============================================================
+# Audio (Chiptune) tests
+# ============================================================
+def test_chiptune_tracks():
+    """Check Chiptune defines separate title and game tracks."""
+    chiptune = (Path(__file__).parent.parent / 'game' / 'js' / 'systems' / 'Chiptune.js').read_text()
+    assert_in("title:", chiptune)
+    assert_in("game:", chiptune)
+    assert_in('play(name)', chiptune)
+    assert_in('unlock()', chiptune)
+
+
+def test_chiptume_resume_covers_interrupted_state():
+    """Check Chiptune handles WebKit's non-standard audio states."""
+    chiptune = (Path(__file__).parent.parent / 'game' / 'js' / 'systems' / 'Chiptune.js').read_text()
+    assert_not_in("state === 'suspended'", chiptune)
+    assert_in("wake()", chiptune)
+
+
+def test_boot_plays_title_theme():
+    """Check welcome screen selects the title theme."""
+    boot = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'Boot.js').read_text()
+    assert_in("Chiptune.play('title')", boot)
+    assert_in('soundEnabled', boot)
+
+
+def test_village_switches_to_game_theme():
+    """Check Village switches to the overworld theme."""
+    village = (Path(__file__).parent.parent / 'game' / 'js' / 'scenes' / 'Village.js').read_text()
+    assert_in("Chiptune.play('game')", village)
+
+
+def test_index_loads_chiptune_and_toggle():
+    """Check index.html includes Chiptune and the music toggle button."""
+    html = (Path(__file__).parent.parent / 'game' / 'index.html').read_text()
+    assert_in('systems/Chiptune.js', html)
+    assert_in('music-toggle', html)
+    assert_in('toggleMute', html)
+
+
+def test_main_wires_audio_lifecycle():
+    """Check main.js unlocks audio and pauses it on hide/show."""
+    main = (Path(__file__).parent.parent / 'game' / 'js' / 'main.js').read_text()
+    assert_in('Chiptune.unlock', main)
+    assert_in('Chiptune.resume', main)
+    assert_in('Chiptune.suspend', main)
+
+
+# ============================================================
+# Player movement tests
+# ============================================================
+def test_player_move_to_allows_retargeting():
+    """Check moveTo does not register extra listeners that cancel movement."""
+    player = (Path(__file__).parent.parent / 'game' / 'js' / 'entities' / 'Player.js').read_text()
+    move_body = player.split('moveTo(x, y) {')[1].split('}')[0]
+    assert_not_in("input.on", move_body)
+    assert_in('targetX', player)
+    assert_in('Distance.Between', player)
+
+
+# ============================================================
+# Planet.py bridge tests
+# ============================================================
+def test_planet_bridge_uses_script_message_signal():
+    """Check the JS bridge listens on the UserContentManager signal."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('script-message-received', planet)
+    assert_not_in('connect("user-message-received"', planet)
+
+
+def test_planet_finished_event_constant():
+    """Check load FINISHED is detected with the correct event value (3)."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('event == 3', planet)
+    assert_not_in('event == 4', planet)
+
+
+def test_planet_portable_game_dir():
+    """Check GAME_DIR derives from the script location, not a hardcoded home."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('__file__', planet)
+    assert_not_in('/home/azzen', planet)
+
+
+def test_planet_allowlists_actions():
+    """Check desktop actions are allowlisted in planet.py."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    for action in ['menu-theme', 'panel-audio', 'panel-monitor', 'keybindings']:
+        assert_in(action, planet)
+
+
+# ============================================================
 # Python syntax tests
 # ============================================================
 def test_python_syntax():
@@ -632,6 +727,23 @@ if __name__ == '__main__':
 
     print("\n--- Welcome Screen ---")
     test("boot has welcome", test_boot_has_welcome)
+
+    print("\n--- Audio (Chiptune) ---")
+    test("chiptune tracks", test_chiptune_tracks)
+    test("chiptune handles interrupted state", test_chiptume_resume_covers_interrupted_state)
+    test("boot plays title theme", test_boot_plays_title_theme)
+    test("village switches to game theme", test_village_switches_to_game_theme)
+    test("index loads chiptune and toggle", test_index_loads_chiptune_and_toggle)
+    test("main wires audio lifecycle", test_main_wires_audio_lifecycle)
+
+    print("\n--- Player Movement ---")
+    test("player move-to allows retargeting", test_player_move_to_allows_retargeting)
+
+    print("\n--- Planet.py Bridge ---")
+    test("planet bridge uses script message signal", test_planet_bridge_uses_script_message_signal)
+    test("planet finished event constant", test_planet_finished_event_constant)
+    test("planet portable game dir", test_planet_portable_game_dir)
+    test("planet allowlists actions", test_planet_allowlists_actions)
 
     print("\n--- Planet.py Features ---")
     test("planet has layer shell", test_planet_has_layer_shell)
