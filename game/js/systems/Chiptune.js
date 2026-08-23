@@ -1,4 +1,14 @@
 const Chiptune = {
+    _dbg(msg) {
+        try {
+            if (window.__PLANET_DEBUG && window.webkit &&
+                window.webkit.messageHandlers && window.webkit.messageHandlers.omarchy) {
+                window.webkit.messageHandlers.omarchy.postMessage(
+                    JSON.stringify({ command: '__probe', trace: msg }));
+            }
+        } catch (e) { /* ignored */ }
+    },
+
     ctx: null,
     master: null,
     noiseBuf: null,
@@ -52,10 +62,12 @@ const Chiptune = {
     },
 
     unlock() {
+        this._dbg(`unlock enter state=${this.ctx ? this.ctx.state : 'no-ctx'}`);
         if (!this.ctx) {
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC) return;
             this.ctx = new AC();
+            this._dbg(`ctx created state=${this.ctx.state}`);
             this.master = this.ctx.createGain();
             this.master.gain.value = this.muted ? 0 : 0.14;
             this.master.connect(this.ctx.destination);
@@ -65,28 +77,61 @@ const Chiptune = {
             const data = this.noiseBuf.getChannelData(0);
             for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
 
-            const check = () => {
-                if (this.ctx.state === 'running' && !this.playing && !this.muted && this.trackName) {
-                    this.start();
-                }
+            this.ctx.onstatechange = () => {
+                this._dbg(`onstatechange state=${this.ctx.state}`);
+                this.ensureRunning();
             };
-            this.ctx.onstatechange = check;
-            check();
-        } else {
-            this.ensureRunning();
         }
-        if (this.ctx.state === 'suspended') this.ctx.resume();
         this.ensureRunning();
     },
 
+    // WebKitGTK can report states other than 'suspended' (e.g. 'interrupted')
+    // when the context is created before a user gesture. Resume anything
+    // that isn't running, and retry — the flip may need a gesture or may
+    // complete asynchronously.
+    wake() {
+        if (!this.ctx || this.ctx.state === 'running') return;
+        this._dbg(`wake resume state=${this.ctx.state}`);
+        try {
+            this.ctx.resume();
+        } catch (e) { this._dbg(`resume threw ${e}`); }
+    },
+
     ensureRunning() {
-        if (this.ctx && this.ctx.state === 'running' && !this.playing && !this.muted && this.trackName) {
+        if (!this.ctx || this.muted || !this.trackName) {
+            this._dbg(`ensureRunning bail ctx=${!!this.ctx} muted=${this.muted} track=${this.trackName}`);
+            return;
+        }
+        if (this.ctx.state === 'running') {
+            this._dbg('ensureRunning -> start');
             this.start();
+            return;
+        }
+
+        this.wake();
+
+        if (!this._retryTimer) {
+            let tries = 0;
+            this._retryTimer = setInterval(() => {
+                tries++;
+                if (!this.ctx || this.muted || !this.trackName ||
+                    this.ctx.state === 'running' || tries > 40) {
+                    clearInterval(this._retryTimer);
+                    this._retryTimer = null;
+                    this.ensureRunning();
+                    return;
+                }
+                this.wake();
+            }, 250);
         }
     },
 
     start() {
-        if (this.playing || !this.ctx || this.ctx.state !== 'running') return;
+        if (this.playing || !this.ctx || this.ctx.state !== 'running') {
+            this._dbg(`start blocked playing=${this.playing} state=${this.ctx ? this.ctx.state : 'no-ctx'}`);
+            return;
+        }
+        this._dbg('start OK');
         this.playing = true;
         this.nextTime = this.ctx.currentTime + 0.06;
         this.timer = setInterval(() => this.schedule(), 25);
@@ -165,7 +210,6 @@ const Chiptune = {
     },
 
     resume() {
-        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
         this.ensureRunning();
     },
 

@@ -123,6 +123,15 @@ class PlanetApp:
         ucm.register_script_message_handler("omarchy")
         ucm.connect("script-message-received", self.on_js_message)
 
+        if DEBUG:
+            trace_js = "window.__PLANET_DEBUG = true;"
+            ucm.add_script(WebKit.UserScript.new(
+                trace_js,
+                WebKit.UserContentInjectedFrames.ALL_FRAMES,
+                WebKit.UserScriptInjectionTime.START,
+                None, None
+            ))
+
         # Write PID
         PID_FILE.write_text(str(os.getpid()))
 
@@ -134,11 +143,51 @@ class PlanetApp:
 
         self.window.present()
 
+    def _log_eval(self, webview, task):
+        try:
+            val = webview.evaluate_javascript_finish(task)
+            out = val.to_string() if val else "null"
+        except Exception as e:
+            out = f"EXC {e!r}"
+        with open("/tmp/omarchy-planet-debug.log", "a") as f:
+            f.write(f"EVAL {out}\n")
+
     def on_page_loaded(self, webview, event, user_name):
-        # WebKit.LoadEvent.FINISHED = 4
-        if event == 4:
+        if DEBUG:
+            with open("/tmp/omarchy-planet-debug.log", "a") as f:
+                f.write(f"LOAD-EVENT={event}\n")
+        # WebKit.LoadEvent.FINISHED = 3
+        if event == 3:
             js = f"window.userName = {json.dumps(user_name)};"
             self.exec_js(js)
+            if DEBUG:
+                probe = (
+                    "(function(){return JSON.stringify({"
+                    "chiptune:typeof Chiptune,"
+                    "play:(typeof Chiptune!=='undefined')?typeof Chiptune.play:'na',"
+                    "ctx:(typeof Chiptune!=='undefined'&&Chiptune.ctx)?Chiptune.ctx.state:'none',"
+                    "playing:(typeof Chiptune!=='undefined')?!!Chiptune.playing:null,"
+                    "track:(typeof Chiptune!=='undefined')?(Chiptune.trackName||null):null,"
+                    "bridgeHandler:!!(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.omarchy),"
+                    "welcomeText:(document.body.innerText.match(/CLICK TO BEGIN/)||[null])[0]"
+                    "});})()"
+                )
+                GLib.timeout_add(2000, lambda: (
+                    self.webview.evaluate_javascript(
+                        probe, -1, None, None, None, self._log_eval),
+                    False)[1])
+                # Time-series: track AudioContext state around user clicks
+                def tick(n):
+                    self.webview.evaluate_javascript(
+                        "(function(){var c=(typeof Chiptune!=='undefined')?Chiptune.ctx:null;"
+                        "return JSON.stringify({t:" + str(n) + ",s:c?c.state:'none',"
+                        "p:(typeof Chiptune!=='undefined')?Chiptune.playing:null,"
+                        "v:document.visibilityState,f:document.hasFocus(),"
+                        "ua:navigator.userActivation?navigator.userActivation.hasBeenActive:null});})()",
+                        -1, None, None, None, self._log_eval)
+                    return n < 20
+                for i in range(1, 21):
+                    GLib.timeout_add(2000 * i, tick, i)
 
     def poll(self):
         if VISIBLE_FILE.exists():
@@ -181,6 +230,9 @@ class PlanetApp:
             return True
         cmd = payload.get("command")
         dbg(f"CMD={cmd}")
+        if cmd == "__probe":
+            dbg(f"PROBE={payload}")
+            return True
         try:
             if cmd == "run":
                 self.run_action(payload.get("action", ""))
