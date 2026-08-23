@@ -20,14 +20,10 @@ class Player {
     }
 
     moveTo(x, y) {
+        this.targetX = x;
+        this.targetY = y;
         this.scene.physics.moveTo(this.sprite, x, y, 150);
         this.isMoving = true;
-        this.scene.input.on('pointerdown', () => this.stopMovement());
-    }
-
-    stopMovement() {
-        this.sprite.body.setVelocity(0);
-        this.isMoving = false;
     }
 
     update() {
@@ -36,11 +32,11 @@ class Player {
         if (this.isMoving) {
             const dist = Phaser.Math.Distance.Between(
                 this.sprite.x, this.sprite.y,
-                this.sprite.body.velocity.x === 0 ? this.sprite.x : this.sprite.x,
-                this.sprite.body.velocity.y === 0 ? this.sprite.y : this.sprite.y
+                this.targetX, this.targetY
             );
 
-            if (this.sprite.body.velocity.x === 0 && this.sprite.body.velocity.y === 0) {
+            if (dist < 6) {
+                this.sprite.body.stop();
                 this.isMoving = false;
             }
         }
