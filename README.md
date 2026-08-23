@@ -9,6 +9,8 @@ An ASCII/terminal-aesthetic RPG that lives at the wallpaper layer behind your wi
 
 - **Interactive NPCs** with sequential dialog teaching Omarchy keybinds and features
 - **4 explorable scenes**: Village, Forest (keybinds), Settings Cave (system), Workshop (themes/tools)
+- **Live demo buttons**: click `[TRY:*]` signs, crystals, and bench buttons to trigger the real desktop action (panels, theme picker, terminal, screenshots...)
+- **8-bit chiptune soundtrack**: separate title and overworld themes, synthesized at runtime with Web Audio API — no audio files
 - **Terminal-style aesthetic**: green monospace text on dark background
 - **Click-to-move** player character with ASCII sprites
 - **Layer shell** integration: sits behind windows at the wallpaper layer
@@ -81,6 +83,8 @@ hyprctl reload
 | Click NPCs | Start dialog sequence |
 | Click dialog box | Advance through dialog lines |
 | Click portals (yellow) | Travel between scenes |
+| Click demo buttons (`[TRY:*]`, crystals, bench) | Run the real desktop action |
+| `[ MUSIC: ON/OFF ]` (bottom-right) | Toggle the soundtrack |
 | Click EXIT sign | Kill the game and return to desktop |
 
 ## Scenes
@@ -92,10 +96,8 @@ The starting area where you meet friendly NPCs:
 |-----|---------|
 | **Elder Omarch** | Workspaces, navigation, grouping |
 | **Blacksmith Tiling** | Window management, resizing, shortcuts |
-| **Merchant Theme** | Themes, menus, notifications, reminders |
-
-### Forest (Keybinds)
-7 signposts with every keyboard shortcut in Omarchy:
+| **Merchant Theme** | Themes, menus, notifications, reminders |### Forest (Keybinds)
+7 signposts with every keyboard shortcut in Omarchy, plus `[TRY:*]` buttons that run the shortcut live:
 - Launching apps (18+ shortcuts)
 - More apps (Spotify, Docker, Obsidian, etc.)
 - AI & communication (ChatGPT, Signal, WhatsApp)
@@ -105,13 +107,15 @@ The starting area where you meet friendly NPCs:
 - System panels (audio, network, bluetooth, display, power)
 
 ### Settings Cave (System)
-Learn about system configuration:
+Learn about system configuration, and click the panel crystals to open real system panels:
 
 | NPC | Teaches |
 |-----|---------|
 | **Cave Guard** | Settings overview |
 | **Network Keeper** | Networking, DNS, Tailscale, firewall |
 | **Display Keeper** | Monitors, scaling, brightness, multi-monitor |
+
+**Crystals**: `[ AUDIO ]`, `[ WIFI ]`, `[ BLUETOOTH ]`, `[ POWER ]` — each summons the matching omarchy-shell panel.
 
 ### Workshop (Tools)
 Discover shell tools and customization:
@@ -121,6 +125,8 @@ Discover shell tools and customization:
 | **Tinkerer** | 22 built-in themes, backgrounds |
 | **Shell Master** | fzf, zoxide, ripgrep, eza, fd, bat, tldr |
 | **Bar Master** | Bar position, widgets, configuration |
+
+**Bench**: `[ THEME PICKER ]`, `[ KEYBIND EDITOR ]` and tinker buttons (`[ CYCLE BACKGROUND ]`, `[ TOGGLE BAR ]`, `[ NIGHT LIGHT ]`) fire the real omarchy commands.
 
 ## Contributing
 
@@ -165,9 +171,9 @@ omarchy-planet/
 │   │   └── dialog.csv # All NPC/sign dialog (editable!)
 │   └── js/
 │       ├── main.js    # Phaser config
-│       ├── scenes/    # Village, Forest, SettingsCave, Workshop
+│       ├── scenes/    # Boot, Village, Forest, SettingsCave, Workshop
 │       ├── entities/  # Player, NPC
-│       └── systems/   # Dialog, DialogData, Bridge
+│       └── systems/   # Dialog, DialogData, Bridge, DemoButton, Chiptune
 └── tests/
     └── test_planet.py # 50 tests
 ```
