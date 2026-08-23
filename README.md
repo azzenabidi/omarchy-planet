@@ -2,7 +2,7 @@
 
 An ASCII/terminal-aesthetic RPG that lives at the wallpaper layer behind your windows, providing an interactive tour of Omarchy features via NPCs, dialog, and interactive objects.
 
-![Omarchy Planet - Village Scene](assets/screenshot-village.png)
+![Omarchy Planet](assets/p1.png)
 *Explore the Village, talk to NPCs, and learn about Omarchy*
 
 ## Features
@@ -17,12 +17,9 @@ An ASCII/terminal-aesthetic RPG that lives at the wallpaper layer behind your wi
 
 ## Screenshots
 
-| Village | Forest | Settings Cave | Workshop |
-|---------|--------|---------------|----------|
-| ![Village](assets/screenshot-village.png) | ![Forest](assets/screenshot-forest.png) | ![Cave](assets/screenshot-cave.png) | ![Workshop](assets/screenshot-workshop.png) |
-| Talk to NPCs to learn Omarchy | Keybind reference signs | System settings guide | Themes and shell tools |
-
-> **Note:** Screenshots coming soon! Run `Super+P` to see it in action.
+| | | |
+|---|---|---|
+| ![Screenshot 1](assets/p1.png) | ![Screenshot 2](assets/p2.png) | ![Screenshot 3](assets/p3.png) |
 
 ## Installation
 
