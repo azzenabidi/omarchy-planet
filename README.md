@@ -75,59 +75,6 @@ hyprctl reload
 | `Super+Alt+P` | Toggle Omarchy Planet on/off |
 | `Super+Ctrl+Alt+P` | Force close Omarchy Planet |
 
-### In-Game Controls
-
-| Control | Action |
-|---------|--------|
-| Click ground | Move your character |
-| Click NPCs | Start dialog sequence |
-| Click dialog box | Advance through dialog lines |
-| Click portals (yellow) | Travel between scenes |
-| Click demo buttons (`[TRY:*]`, crystals, bench) | Run the real desktop action |
-| `[ MUSIC: ON/OFF ]` (bottom-right) | Toggle the soundtrack |
-| Click EXIT sign | Kill the game and return to desktop |
-
-## Scenes
-
-### Village (Hub)
-The starting area where you meet friendly NPCs:
-
-| NPC | Teaches |
-|-----|---------|
-| **Elder Omarch** | Workspaces, navigation, grouping |
-| **Blacksmith Tiling** | Window management, resizing, shortcuts |
-| **Merchant Theme** | Themes, menus, notifications, reminders |### Forest (Keybinds)
-7 signposts with every keyboard shortcut in Omarchy, plus `[TRY:*]` buttons that run the shortcut live:
-- Launching apps (18+ shortcuts)
-- More apps (Spotify, Docker, Obsidian, etc.)
-- AI & communication (ChatGPT, Signal, WhatsApp)
-- Clipboard & input (copy, paste, emoji, calculator)
-- Screenshots & recording (screenshot, record, OCR, dictation)
-- Notifications & reminders
-- System panels (audio, network, bluetooth, display, power)
-
-### Settings Cave (System)
-Learn about system configuration, and click the panel crystals to open real system panels:
-
-| NPC | Teaches |
-|-----|---------|
-| **Cave Guard** | Settings overview |
-| **Network Keeper** | Networking, DNS, Tailscale, firewall |
-| **Display Keeper** | Monitors, scaling, brightness, multi-monitor |
-
-**Crystals**: `[ AUDIO ]`, `[ WIFI ]`, `[ BLUETOOTH ]`, `[ POWER ]` — each summons the matching omarchy-shell panel.
-
-### Workshop (Tools)
-Discover shell tools and customization:
-
-| NPC | Teaches |
-|-----|---------|
-| **Tinkerer** | 22 built-in themes, backgrounds |
-| **Shell Master** | fzf, zoxide, ripgrep, eza, fd, bat, tldr |
-| **Bar Master** | Bar position, widgets, configuration |
-
-**Bench**: `[ THEME PICKER ]`, `[ KEYBIND EDITOR ]` and tinker buttons (`[ CYCLE BACKGROUND ]`, `[ TOGGLE BAR ]`, `[ NIGHT LIGHT ]`) fire the real omarchy commands.
-
 ## Contributing
 
 ### Adding Dialog
