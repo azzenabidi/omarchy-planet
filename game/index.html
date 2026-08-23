@@ -7,13 +7,38 @@
         * { margin: 0; padding: 0; }
         body { background: transparent; overflow: hidden; }
         canvas { display: block; }
+        #music-toggle {
+            position: fixed;
+            right: 12px;
+            bottom: 10px;
+            font: bold 12px monospace;
+            color: #00ff88;
+            background: #000000;
+            border: 1px solid #00ff88;
+            padding: 4px 8px;
+            cursor: pointer;
+            z-index: 100;
+            opacity: 0.7;
+        }
+        #music-toggle:hover { opacity: 1; }
     </style>
 </head>
 <body>
+    <button id="music-toggle">[ MUSIC: ON ]</button>
+    <script>
+        document.getElementById('music-toggle').addEventListener('click', function (e) {
+            e.stopPropagation();
+            const muted = Chiptune.toggleMute();
+            this.textContent = muted ? '[ MUSIC: OFF ]' : '[ MUSIC: ON ]';
+            if (!muted) Chiptune.unlock();
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script src="js/systems/Bridge.js"></script>
     <script src="js/systems/Dialog.js"></script>
     <script src="js/systems/DialogData.js"></script>
+    <script src="js/systems/DemoButton.js"></script>
+    <script src="js/systems/Chiptune.js"></script>
     <script src="js/entities/Player.js"></script>
     <script src="js/entities/NPC.js"></script>
     <script src="js/scenes/Boot.js"></script>

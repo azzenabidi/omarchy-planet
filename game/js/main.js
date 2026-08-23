@@ -20,6 +20,9 @@ const config = {
 
 const game = new Phaser.Game(config);
 
+// Start chiptune on first interaction (autoplay policy requires a gesture)
+window.addEventListener('pointerdown', () => Chiptune.unlock(), true);
+
 window.onPlanetActivate = function() {
     if (game && game.scene) {
         game.scene.scenes.forEach(scene => {
@@ -28,6 +31,7 @@ window.onPlanetActivate = function() {
             }
         });
     }
+    Chiptune.resume();
 };
 
 window.onPlanetDeactivate = function() {
@@ -38,4 +42,5 @@ window.onPlanetDeactivate = function() {
             }
         });
     }
+    Chiptune.suspend();
 };
