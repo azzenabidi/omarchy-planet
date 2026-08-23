@@ -22,10 +22,12 @@ class Boot extends Phaser.Scene {
     showWelcome() {
         const name = window.userName || 'Traveler';
 
-        // Title theme (starts immediately if autoplay is allowed,
-        // otherwise on the first click via the global unlock listener)
+        // Select the title theme. WebKitGTK holds the AudioContext in an
+        // interrupted/suspended state until the first user gesture, so the
+        // first click enables sound; the second click starts the game.
         Chiptune.play('title');
         Chiptune.unlock();
+        this.soundEnabled = false;
 
         // Terminal-style welcome screen
         const bg = this.add.graphics();
@@ -33,21 +35,24 @@ class Boot extends Phaser.Scene {
         bg.fillRect(0, 0, 1920, 1080);
 
         const lines = [
-            { text: '> OMARCHY PLANET v1.0.0', y: 300, size: '24px', color: '#00ff00' },
-            { text: '> ─────────────────────────────────────────', y: 340, size: '16px', color: '#006600' },
-            { text: `> Welcome, ${name}!`, y: 400, size: '20px', color: '#00ff00' },
-            { text: '>', y: 440, size: '16px', color: '#00ff00' },
-            { text: '> You have been chosen to explore the lands of Omarchy.', y: 470, size: '16px', color: '#00aa00' },
-            { text: '> Talk to the villagers to learn the ways of this system.', y: 500, size: '16px', color: '#00aa00' },
-            { text: '>', y: 530, size: '16px', color: '#00ff00' },
-            { text: '> CONTROLS:', y: 570, size: '16px', color: '#ffff00' },
-            { text: '>   Click ground    - Move your character', y: 600, size: '14px', color: '#00cc00' },
-            { text: '>   Click NPC       - Talk to them', y: 630, size: '14px', color: '#00cc00' },
-            { text: '>   Click during dialog - Advance text', y: 660, size: '14px', color: '#00cc00' },
+            { text: '> OMARCHY PLANET v1.0.0', y: 270, size: '24px', color: '#00ff00' },
+            { text: '> ─────────────────────────────────────────', y: 310, size: '16px', color: '#006600' },
+            { text: `> Welcome, ${name}!`, y: 360, size: '20px', color: '#00ff00' },
+            { text: '>', y: 392, size: '16px', color: '#00ff00' },
+            { text: '> You have been chosen to explore the lands of Omarchy.', y: 420, size: '16px', color: '#00aa00' },
+            { text: '> Talk to the villagers to learn the ways of this system.', y: 448, size: '16px', color: '#00aa00' },
+            { text: '>', y: 476, size: '16px', color: '#00ff00' },
+            { text: '> CONTROLS:', y: 508, size: '16px', color: '#ffff00' },
+            { text: '>   Click ground      - Move your character', y: 538, size: '14px', color: '#00cc00' },
+            { text: '>   Click NPC         - Talk to them', y: 562, size: '14px', color: '#00cc00' },
+            { text: '>   Click dialog box  - Advance text', y: 586, size: '14px', color: '#00cc00' },
+            { text: '>   Click yellow portals - Travel between scenes', y: 610, size: '14px', color: '#00cc00' },
+            { text: '>   Click [TRY:*] signs, crystals & bench tools - Run real actions', y: 634, size: '14px', color: '#00cc00' },
+            { text: '>   [ MUSIC ] button (bottom-right) - Toggle the soundtrack', y: 658, size: '14px', color: '#00cc00' },
             { text: '>', y: 690, size: '16px', color: '#00ff00' },
-            { text: '> Press Super+P to toggle this world on/off.', y: 720, size: '14px', color: '#008800' },
-            { text: '>', y: 760, size: '16px', color: '#00ff00' },
-            { text: '> [CLICK TO BEGIN]', y: 820, size: '18px', color: '#ffff00' },
+            { text: '> KEYBINDS:', y: 722, size: '16px', color: '#ffff00' },
+            { text: '>   Super+Alt+P   - Hide/show Omarchy Planet', y: 750, size: '14px', color: '#00cc00' },
+            { text: '>   Super+Ctrl+Alt+P - Quit Omarchy Planet', y: 774, size: '14px', color: '#00cc00' },
         ];
 
         lines.forEach(line => {
@@ -58,8 +63,56 @@ class Boot extends Phaser.Scene {
             }).setOrigin(0.5);
         });
 
-        // Click anywhere to start
-        this.input.once('pointerdown', () => {
+        const beginText = this.add.text(960, 820,
+            '> [ CLICK TO ENABLE SOUND ]', {
+                fontSize: '18px',
+                fill: '#ffff00',
+                fontFamily: 'monospace'
+            }).setOrigin(0.5);
+
+        this.tweens.add({
+            targets: beginText,
+            alpha: 0.5,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        // First click unlocks audio (title theme), second click begins.
+        // The state flip is async, so watch for it; fall back to starting
+        // the game after several clicks even if audio never unlocks.
+        this.soundEnabled = false;
+        this.welcomeClicks = 0;
+
+        const enableSound = () => {
+            if (this.soundEnabled) return;
+            this.soundEnabled = true;
+            beginText.setText('> [ CLICK TO BEGIN ]');
+        };
+
+        if (Chiptune.ctx && Chiptune.ctx.state === 'running') {
+            enableSound();
+        } else {
+            const watch = setInterval(() => {
+                if (Chiptune.ctx && Chiptune.ctx.state === 'running') {
+                    clearInterval(watch);
+                    enableSound();
+                }
+            }, 120);
+            this.events.once('shutdown', () => clearInterval(watch));
+        }
+
+        this.input.on('pointerdown', () => {
+            this.welcomeClicks++;
+            if (!this.soundEnabled) {
+                Chiptune.unlock();
+                if (this.soundEnabled || this.welcomeClicks >= 3) {
+                    this.input.removeAllListeners('pointerdown');
+                    this.scene.start('Village');
+                }
+                return;
+            }
+            this.input.removeAllListeners('pointerdown');
             this.scene.start('Village');
         });
     }

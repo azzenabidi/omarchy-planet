@@ -45,9 +45,9 @@ if ! grep -q "omarchy-planet" "$BINDINGS_FILE" 2>/dev/null; then
 
 -- Omarchy Planet RPG tour
 o.bind("SUPER + ALT + P", "Omarchy Planet", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py")
-o.bind("SUPER + CTRL + P", "Omarchy Planet (Close)", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
+o.bind("SUPER + CTRL + ALT + P", "Omarchy Planet (Close)", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
 EOF
-    echo "Keybinds added: Super+Alt+P (toggle), Super+Ctrl+P (close)"
+    echo "Keybinds added: Super+Alt+P (toggle), Super+Ctrl+Alt+P (close)"
 else
     echo "Keybinds already configured."
 fi
@@ -64,6 +64,6 @@ echo "========================================="
 echo ""
 echo "Usage:"
 echo "  Super+Alt+P  - Toggle Omarchy Planet"
-echo "  Super+Ctrl+P - Close Omarchy Planet"
+echo "  Super+Ctrl+Alt+P - Close Omarchy Planet"
 echo ""
 echo "Run 'hyprctl reload' to apply keybindings."

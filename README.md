@@ -59,7 +59,7 @@ cat >> ~/.config/hypr/bindings.lua << 'EOF'
 
 -- Omarchy Planet RPG tour
 o.bind("SUPER + ALT + P", "Omarchy Planet", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/toggle.py")
-o.bind("SUPER + CTRL + P", "Omarchy Planet (Close)", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
+o.bind("SUPER + CTRL + ALT + P", "Omarchy Planet (Close)", "/usr/bin/python3 ~/.config/omarchy/plugins/omarchy-planet/stop.py")
 EOF
 
 # Reload Hyprland
@@ -73,7 +73,7 @@ hyprctl reload
 | Keybind | Action |
 |---------|--------|
 | `Super+Alt+P` | Toggle Omarchy Planet on/off |
-| `Super+Ctrl+P` | Force close Omarchy Planet |
+| `Super+Ctrl+Alt+P` | Force close Omarchy Planet |
 
 ### In-Game Controls
 

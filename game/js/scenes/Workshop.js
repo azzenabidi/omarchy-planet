@@ -91,7 +91,7 @@ class Workshop extends Phaser.Scene {
 
     createWorkshop() {
         new DemoButton(this, 600, 400, '[ THEME PICKER ]', 'menu-theme',
-            'Opening the Theme picker (Super+Ctrl+Shift+Space)...', { fill: '#ffcc44' });
+            'Opening the Theme picker (Super+Shift+Ctrl+Space)...', { fill: '#ffcc44' });
         new DemoButton(this, 1300, 400, '[ KEYBIND EDITOR ]', 'keybindings',
             'Opening the Keybindings reference...', { fill: '#ffcc44' });
     }
