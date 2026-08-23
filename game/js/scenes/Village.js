@@ -15,6 +15,10 @@ class Village extends Phaser.Scene {
         // Portals
         this.createPortals();
 
+        // Live demo objects
+        this.createMenuSigns();
+        this.createWorkspaceStones();
+
         this.add.text(960, 30, '[ OMARCHY PLANET ]', {
             fontSize: '20px',
             fill: '#00ff00',
@@ -22,11 +26,39 @@ class Village extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click to move | Click NPCs to talk | Explore via portals', {
+        this.add.text(960, 1050, '> Click to move | Click NPCs to talk | Click signs & stones to try it live | Explore via portals', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
+    }
+
+    createMenuSigns() {
+        this.add.text(960, 438, '> LIVE MENUS - click to open for real:', {
+            fontSize: '11px',
+            fill: '#00aa00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5).setDepth(20);
+
+        new DemoButton(this, 740, 475, '[ OMARCHY MENU ]', 'menu-root',
+            'Opening the Omarchy Menu (Super+Space)...', { fill: '#ffff00' });
+        new DemoButton(this, 960, 475, '[ APPS MENU ]', 'menu-apps',
+            'Opening the Apps Menu (Super+Alt+Space)...', { fill: '#ffff00' });
+        new DemoButton(this, 1170, 475, '[ SYSTEM MENU ]', 'menu-system',
+            'Opening the System Menu (Super+Escape)...', { fill: '#ffff00' });
+    }
+
+    createWorkspaceStones() {
+        this.add.text(960, 605, '> WORKSPACE STONES - click to jump:', {
+            fontSize: '11px',
+            fill: '#00aa00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5).setDepth(20);
+
+        for (let i = 1; i <= 5; i++) {
+            new DemoButton(this, 860 + i * 50, 650, `[${i}]`, `workspace-${i}`,
+                `Switching to workspace ${i} (Super+${i})...`, { fill: '#00ccff', fontSize: '14px' });
+        }
     }
 
     createNPCs() {

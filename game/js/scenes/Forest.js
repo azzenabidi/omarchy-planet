@@ -7,6 +7,7 @@ class Forest extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#001100');
         this.createMap();
         this.createSignposts();
+        this.createTryButtons();
 
         this.player = new Player(this, 960, 100);
         this.dialog = new Dialog(this);
@@ -18,7 +19,7 @@ class Forest extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click signs to learn keybinds | Click [VILLAGE] to return', {
+        this.add.text(960, 1050, '> Click signs to learn keybinds | Click [TRY:*] to run it live | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
@@ -97,6 +98,20 @@ class Forest extends Phaser.Scene {
                 this.dialog.show('Signpost', sign.lines[0]);
             });
         });
+    }
+
+    createTryButtons() {
+        // Each TRY button fires the actual keybind action on the desktop
+        new DemoButton(this, 1270, 150, '[TRY: TERMINAL]', 'terminal',
+            'Launching a terminal (Super+Return)...');
+        new DemoButton(this, 650, 280, '[TRY: EMOJI PICKER]', 'emoji-picker',
+            'Opening the emoji picker (Super+Ctrl+E)...');
+        new DemoButton(this, 1270, 410, '[TRY: CLIPBOARD HISTORY]', 'clipboard-history',
+            'Opening clipboard history (Super+Ctrl+V)...');
+        new DemoButton(this, 650, 540, '[TRY: SCREENSHOT]', 'screenshot',
+            'Taking a screenshot (Print)...');
+        new DemoButton(this, 1270, 800, '[TRY: AUDIO PANEL]', 'panel-audio',
+            'Opening the audio panel (Super+Ctrl+A)...');
     }
 
     update() {

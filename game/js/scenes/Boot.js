@@ -119,14 +119,6 @@ class Boot extends Phaser.Scene {
             '[][][]'
         ], '#333333', '12px monospace');
 
-        this.createAsciiSprite('cave_entrance', [
-            '%%%%%%',
-            '%    %',
-            '% ## %',
-            '%    %',
-            '%%%%%%'
-        ], '#222222', '12px monospace');
-
         this.createAsciiSprite('building', [
             '  /\\  ',
             ' /  \\ ',

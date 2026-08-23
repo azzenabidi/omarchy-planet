@@ -6,8 +6,8 @@ class SettingsCave extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor('#111111');
         this.createMap();
-        this.createCaveEntrance();
         this.createNPCs();
+        this.createPanelCrystals();
 
         this.player = new Player(this, 960, 100);
         this.dialog = new Dialog(this);
@@ -17,6 +17,12 @@ class SettingsCave extends Phaser.Scene {
             fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(50);
+
+        this.add.text(960, 1050, '> Click crystals to open real panels | Click [VILLAGE] to return', {
+            fontSize: '12px',
+            fill: '#00aa00',
+            fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         // Return portal
@@ -81,22 +87,21 @@ class SettingsCave extends Phaser.Scene {
         }
     }
 
-    createCaveEntrance() {
-        const entrance = this.add.image(960, 600, 'cave_entrance');
-        entrance.setInteractive({ useHandCursor: true });
-        entrance.setScale(2);
-        entrance.setDepth(5);
-
-        this.add.text(960, 680, '> Click to open Display Settings', {
-            fontSize: '14px',
-            fill: '#00ff00',
+    createPanelCrystals() {
+        this.add.text(960, 760, '> SYSTEM PANEL CRYSTALS - click to summon:', {
+            fontSize: '11px',
+            fill: '#00aa00',
             fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(50);
+        }).setOrigin(0.5).setDepth(20);
 
-        entrance.on('pointerdown', () => {
-            this.dialog.show('System', 'Opening Display Settings...');
-            Bridge.openSettings();
-        });
+        new DemoButton(this, 660, 810, '[ AUDIO ]', 'panel-audio',
+            'Summoning the Audio panel (Super+Ctrl+A)...', { fill: '#ff66ff' });
+        new DemoButton(this, 860, 810, '[ WIFI ]', 'panel-network',
+            'Summoning the Network panel (Super+Ctrl+W)...', { fill: '#66ccff' });
+        new DemoButton(this, 1070, 810, '[ BLUETOOTH ]', 'panel-bluetooth',
+            'Summoning the Bluetooth panel (Super+Ctrl+B)...', { fill: '#66aaff' });
+        new DemoButton(this, 1280, 810, '[ POWER ]', 'panel-power',
+            'Summoning the Power panel (Super+Ctrl+P)...', { fill: '#ffaa44' });
     }
 
     update() {

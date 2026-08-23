@@ -8,6 +8,7 @@ class Workshop extends Phaser.Scene {
         this.createMap();
         this.createWorkshop();
         this.createNPCs();
+        this.createTinkerBench();
 
         this.player = new Player(this, 960, 700);
         this.dialog = new Dialog(this);
@@ -19,7 +20,7 @@ class Workshop extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click objects to customize | Click [VILLAGE] to return', {
+        this.add.text(960, 1050, '> Click tools to customize for real | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
@@ -89,37 +90,25 @@ class Workshop extends Phaser.Scene {
     }
 
     createWorkshop() {
-        const workbench = this.add.image(600, 400, 'workbench');
-        workbench.setInteractive({ useHandCursor: true });
-        workbench.setScale(2);
-        workbench.setDepth(5);
+        new DemoButton(this, 600, 400, '[ THEME PICKER ]', 'menu-theme',
+            'Opening the Theme picker (Super+Ctrl+Shift+Space)...', { fill: '#ffcc44' });
+        new DemoButton(this, 1300, 400, '[ KEYBIND EDITOR ]', 'keybindings',
+            'Opening the Keybindings reference...', { fill: '#ffcc44' });
+    }
 
-        this.add.text(600, 480, '> Theme Picker', {
-            fontSize: '12px',
-            fill: '#00ff00',
+    createTinkerBench() {
+        this.add.text(960, 580, '> TINKER BENCH - click to try live:', {
+            fontSize: '11px',
+            fill: '#00aa00',
             fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(6);
+        }).setOrigin(0.5).setDepth(20);
 
-        workbench.on('pointerdown', () => {
-            this.dialog.show('Workbench', 'Opening Theme Picker...');
-            Bridge.openTheme();
-        });
-
-        const keyboard = this.add.image(1300, 400, 'keyboard');
-        keyboard.setInteractive({ useHandCursor: true });
-        keyboard.setScale(2);
-        keyboard.setDepth(5);
-
-        this.add.text(1300, 480, '> Keybind Editor', {
-            fontSize: '12px',
-            fill: '#00ff00',
-            fontFamily: 'monospace'
-        }).setOrigin(0.5).setDepth(6);
-
-        keyboard.on('pointerdown', () => {
-            this.dialog.show('Keyboard', 'Opening Keybind Settings...');
-            Bridge.openKeyboard();
-        });
+        new DemoButton(this, 600, 630, '[ CYCLE BACKGROUND ]', 'background-next',
+            'Cycling to the next theme background (Super+Ctrl+Space)...', { fill: '#ffcc44' });
+        new DemoButton(this, 960, 630, '[ TOGGLE BAR ]', 'toggle-bar',
+            'Toggling the top bar (Super+Shift+Space)...', { fill: '#ffcc44' });
+        new DemoButton(this, 1320, 630, '[ NIGHT LIGHT ]', 'toggle-nightlight',
+            'Toggling Night Light (Super+Ctrl+N)...', { fill: '#ffcc44' });
     }
 
     update() {

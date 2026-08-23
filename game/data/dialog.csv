@@ -108,10 +108,9 @@ Super+Ctrl+Alt+D: Calendar
 Super+Ctrl+T: Activity monitor (btop)",
 SettingsCave,cave_guard,npc,Cave Guard,1,"Halt! This is the Cave of Settings.",
 SettingsCave,cave_guard,npc,Cave Guard,2,"Here you can configure every aspect of your system.",
-SettingsCave,cave_guard,npc,Cave Guard,3,"Click the entrance to open Display settings.",
-SettingsCave,cave_guard,npc,Cave Guard,4,"From Super+Space menu, access all settings:",
-SettingsCave,cave_guard,npc,Cave Guard,5,"Monitors, Keybindings, Input, Network DNS,",
-SettingsCave,cave_guard,npc,Cave Guard,6,"Default apps, Plugins, Security, and Hyprland config.",Settings explored! Return to the Village or visit the Workshop.
+SettingsCave,cave_guard,npc,Cave Guard,3,"From Super+Space menu, access all settings:",
+SettingsCave,cave_guard,npc,Cave Guard,4,"Monitors, Keybindings, Input, Network DNS,",
+SettingsCave,cave_guard,npc,Cave Guard,5,"Default apps, Plugins, Security, and Hyprland config.",Settings explored! Return to the Village or visit the Workshop.
 SettingsCave,networker,npc,Network Keeper,1,"NETWORKING: NetworkManager backend.",
 SettingsCave,networker,npc,Network Keeper,2,"Super+Ctrl+W opens WiFi panel.",
 SettingsCave,networker,npc,Network Keeper,3,"nmtui for terminal network management.",
