@@ -503,10 +503,10 @@ def test_boot_has_welcome():
 # Planet.py feature tests
 # ============================================================
 def test_planet_has_layer_shell():
-    """Check planet.py uses layer shell."""
+    """Check planet.py uses layer shell (BOTTOM layer: BACKGROUND ignores pointer events)."""
     planet = (Path(__file__).parent.parent / 'planet.py').read_text()
     assert_in('Gtk4LayerShell', planet)
-    assert_in('Layer.BACKGROUND', planet)
+    assert_in('Layer.BOTTOM', planet)
 
 
 def test_planet_has_user_name():

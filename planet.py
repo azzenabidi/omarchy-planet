@@ -13,9 +13,59 @@ gi.require_version('Gtk4LayerShell', '1.0')
 from gi.repository import Gtk, Gdk, WebKit, GLib
 from gi.repository import Gtk4LayerShell as LayerShell
 
-GAME_DIR = Path('/home/azzen/.config/omarchy/plugins/omarchy-planet/game')
+GAME_DIR = Path(__file__).resolve().parent / "game"
 PID_FILE = Path("/tmp/omarchy-planet.pid")
 VISIBLE_FILE = Path("/tmp/omarchy-planet-visible")
+DEBUG = bool(os.getenv("OMARCHY_PLANET_DEBUG"))
+
+# Allowlisted actions the web game may trigger on the real desktop.
+# Menus open via omarchy-menu routes, panels via omarchy-shell summon,
+# everything else is a plain omarchy command.
+MENU_ROUTES = {
+    "menu-root": "root",
+    "menu-apps": "apps",
+    "menu-system": "system",
+    "menu-theme": "style.theme",
+    "menu-background": "style.background",
+    "menu-about": "about",
+}
+
+PANEL_IDS = {
+    "panel-audio": "omarchy.audio",
+    "panel-network": "omarchy.network",
+    "panel-bluetooth": "omarchy.bluetooth",
+    "panel-power": "omarchy.power",
+    "panel-monitor": "omarchy.monitor",
+    "panel-clock": "omarchy.clock",
+    "panel-weather": "omarchy.weather",
+}
+
+COMMANDS = {
+    "terminal": ["omarchy-launch-terminal"],
+    "screenshot": ["omarchy-capture-screenshot"],
+    "clipboard-history": ["omarchy-clipboard-open"],
+    "emoji-picker": ["omarchy-menu-emoji"],
+    "keybindings": ["omarchy-menu-keybindings"],
+    "background-next": ["omarchy-theme-bg-next"],
+    "toggle-bar": ["omarchy-toggle-bar"],
+    "toggle-nightlight": ["omarchy-toggle-nightlight"],
+    "lock": ["omarchy-system-lock"],
+}
+
+
+def action_command(action):
+    """Translate an action name into an argv list, or None if unknown."""
+    if action in MENU_ROUTES:
+        return ["omarchy-menu", "summon", MENU_ROUTES[action]]
+    if action in PANEL_IDS:
+        return ["omarchy-shell", "-q", "shell", "summon", PANEL_IDS[action]]
+    if action in COMMANDS:
+        return COMMANDS[action]
+    if action.startswith("workspace-"):
+        ws = action.split("-", 1)[1]
+        if ws.isdigit():
+            return ["hyprctl", "dispatch", "workspace", str(int(ws))]
+    return None
 
 
 def get_user_name():
@@ -71,7 +121,7 @@ class PlanetApp:
         # JS bridge
         ucm = self.webview.get_user_content_manager()
         ucm.register_script_message_handler("omarchy")
-        self.webview.connect("user-message-received", self.on_js_message)
+        ucm.connect("script-message-received", self.on_js_message)
 
         # Write PID
         PID_FILE.write_text(str(os.getpid()))
@@ -114,27 +164,53 @@ class PlanetApp:
             js, -1, None, None, None, None, None
         )
 
-    def on_js_message(self, webview, message):
-        params = message.get_parameters()
-        if params:
-            cmd = params.get_string()
-            if cmd == "open-settings":
-                self.run_omarchy("monitor")
+    def on_js_message(self, manager, value):
+        def dbg(msg):
+            if DEBUG:
+                with open("/tmp/omarchy-planet-debug.log", "a") as f:
+                    f.write(msg + "\n")
+
+        try:
+            raw = value.to_string()
+            dbg(f"MSG raw={raw!r}")
+            payload = json.loads(raw)
+            if isinstance(payload, str):
+                payload = json.loads(payload)
+        except Exception as e:
+            dbg(f"PARSE-ERROR: {e!r}")
+            return True
+        cmd = payload.get("command")
+        dbg(f"CMD={cmd}")
+        try:
+            if cmd == "run":
+                self.run_action(payload.get("action", ""))
+            elif cmd == "open-settings":
+                self.run_action("panel-monitor")
             elif cmd == "open-theme":
-                self.run_omarchy("theme-switcher")
+                self.run_action("menu-theme")
             elif cmd == "open-keyboard":
-                self.run_omarchy("keyboard")
+                self.run_action("keybindings")
             elif cmd == "dismiss":
                 self.toggle()
             elif cmd == "exit":
                 self.app.quit()
+        except Exception:
+            import traceback
+            dbg(f"HANDLER-ERROR: {traceback.format_exc()}")
         return True
 
-    def run_omarchy(self, panel_id):
-        import subprocess
+    def run_action(self, action):
+        argv = action_command(action)
+        if DEBUG:
+            with open("/tmp/omarchy-planet-debug.log", "a") as f:
+                f.write(f"ACTION={action!r} argv={argv}\n")
+        if not argv:
+            print(f"Unknown action: {action}", flush=True)
+            return
         subprocess.Popen(
-            ["omarchy-shell", "shell", "summon", panel_id],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            argv,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            start_new_session=True
         )
 
     def run(self):

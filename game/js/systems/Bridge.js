@@ -8,16 +8,29 @@ const Bridge = {
         }
     },
 
+    // Trigger a real desktop action (allowlisted in planet.py)
+    run(action) {
+        this.send('run', { action });
+    },
+
+    menu(route) {
+        this.run(`menu-${route}`);
+    },
+
+    panel(id) {
+        this.run(`panel-${id}`);
+    },
+
     openSettings() {
-        this.send('open-settings');
+        this.run('panel-monitor');
     },
 
     openTheme() {
-        this.send('open-theme');
+        this.run('menu-theme');
     },
 
     openKeyboard() {
-        this.send('open-keyboard');
+        this.run('keybindings');
     },
 
     dismiss() {
