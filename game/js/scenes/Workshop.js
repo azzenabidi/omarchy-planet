@@ -10,24 +10,24 @@ class Workshop extends Phaser.Scene {
         this.createNPCs();
         this.createTinkerBench();
 
-        this.player = new Player(this, 960, 700);
+        this.player = new Player(this, GameConfig.WIDTH / 2, 700);
         this.dialog = new Dialog(this);
 
-        this.add.text(960, 30, '[ WORKSHOP ]', {
+        this.add.text(GameConfig.WIDTH / 2, 30, '[ WORKSHOP ]', {
             fontSize: '20px',
             fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click tools to customize for real | Click [VILLAGE] to return', {
+        this.add.text(GameConfig.WIDTH / 2, GameConfig.HEIGHT - 30, '> Click tools to customize for real | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         // Return portal
-        const returnPortal = this.add.text(1890, 540, '[VILLAGE] <', {
+        const returnPortal = this.add.text(GameConfig.WIDTH - 30, GameConfig.HEIGHT / 2, '[VILLAGE] <', {
             fontSize: '14px',
             fill: '#ffff00',
             fontFamily: 'monospace',
@@ -63,9 +63,9 @@ class Workshop extends Phaser.Scene {
     }
 
     createMap() {
-        const tileSize = 32;
-        const mapWidth = 60;
-        const mapHeight = 34;
+        const tileSize = GameConfig.TILE;
+        const mapWidth = Math.ceil(GameConfig.WIDTH / tileSize);
+        const mapHeight = Math.ceil(GameConfig.HEIGHT / tileSize);
 
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
@@ -81,33 +81,33 @@ class Workshop extends Phaser.Scene {
 
         for (let x = 0; x < mapWidth; x++) {
             this.add.image(x * tileSize + 16, 0, 'cave');
-            this.add.image(x * tileSize + 16, 33 * tileSize + 16, 'cave');
+            this.add.image(x * tileSize + 16, (mapHeight - 1) * tileSize + 16, 'cave');
         }
         for (let y = 0; y < mapHeight; y++) {
             this.add.image(0, y * tileSize + 16, 'cave');
-            this.add.image(59 * tileSize + 16, y * tileSize + 16, 'cave');
+            this.add.image((mapWidth - 1) * tileSize + 16, y * tileSize + 16, 'cave');
         }
     }
 
     createWorkshop() {
-        new DemoButton(this, 600, 400, '[ THEME PICKER ]', 'menu-theme',
+        new DemoButton(this, GameConfig.WIDTH / 2 - 360, 400, '[ THEME PICKER ]', 'menu-theme',
             'Opening the Theme picker (Super+Shift+Ctrl+Space)...', { fill: '#ffcc44' });
-        new DemoButton(this, 1300, 400, '[ KEYBIND EDITOR ]', 'keybindings',
+        new DemoButton(this, GameConfig.WIDTH / 2 + 340, 400, '[ KEYBIND EDITOR ]', 'keybindings',
             'Opening the Keybindings reference...', { fill: '#ffcc44' });
     }
 
     createTinkerBench() {
-        this.add.text(960, 580, '> TINKER BENCH - click to try live:', {
+        this.add.text(GameConfig.WIDTH / 2, 580, '> TINKER BENCH - click to try live:', {
             fontSize: '11px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(20);
 
-        new DemoButton(this, 600, 630, '[ CYCLE BACKGROUND ]', 'background-next',
+        new DemoButton(this, GameConfig.WIDTH / 2 - 360, 630, '[ CYCLE BACKGROUND ]', 'background-next',
             'Cycling to the next theme background (Super+Ctrl+Space)...', { fill: '#ffcc44' });
-        new DemoButton(this, 960, 630, '[ TOGGLE BAR ]', 'toggle-bar',
+        new DemoButton(this, GameConfig.WIDTH / 2, 630, '[ TOGGLE BAR ]', 'toggle-bar',
             'Toggling the top bar (Super+Shift+Space)...', { fill: '#ffcc44' });
-        new DemoButton(this, 1320, 630, '[ NIGHT LIGHT ]', 'toggle-nightlight',
+        new DemoButton(this, GameConfig.WIDTH / 2 + 360, 630, '[ NIGHT LIGHT ]', 'toggle-nightlight',
             'Toggling Night Light (Super+Ctrl+N)...', { fill: '#ffcc44' });
     }
 

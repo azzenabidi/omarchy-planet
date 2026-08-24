@@ -9,24 +9,24 @@ class Forest extends Phaser.Scene {
         this.createSignposts();
         this.createTryButtons();
 
-        this.player = new Player(this, 960, 100);
+        this.player = new Player(this, GameConfig.WIDTH / 2, 100);
         this.dialog = new Dialog(this);
 
-        this.add.text(960, 30, '[ FOREST PATH - KEYBINDS ]', {
+        this.add.text(GameConfig.WIDTH / 2, 30, '[ FOREST PATH - KEYBINDS ]', {
             fontSize: '20px',
             fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click signs to learn keybinds | Click [TRY:*] to run it live | Click [VILLAGE] to return', {
+        this.add.text(GameConfig.WIDTH / 2, GameConfig.HEIGHT - 30, '> Click signs to learn keybinds | Click [TRY:*] to run it live | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         // Return portal
-        const returnPortal = this.add.text(960, 50, '> [VILLAGE] <', {
+        const returnPortal = this.add.text(GameConfig.WIDTH / 2, 50, '> [VILLAGE] <', {
             fontSize: '14px',
             fill: '#ffff00',
             fontFamily: 'monospace',
@@ -48,9 +48,9 @@ class Forest extends Phaser.Scene {
     }
 
     createMap() {
-        const tileSize = 32;
-        const mapWidth = 60;
-        const mapHeight = 34;
+        const tileSize = GameConfig.TILE;
+        const mapWidth = Math.ceil(GameConfig.WIDTH / tileSize);
+        const mapHeight = Math.ceil(GameConfig.HEIGHT / tileSize);
 
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
@@ -59,18 +59,18 @@ class Forest extends Phaser.Scene {
         }
 
         for (let y = 2; y < mapHeight - 2; y++) {
-            this.add.image(960, y * tileSize + 16, 'path');
-            this.add.image(992, y * tileSize + 16, 'path');
+            this.add.image(GameConfig.WIDTH / 2, y * tileSize + 16, 'path');
+            this.add.image(GameConfig.WIDTH / 2 + tileSize, y * tileSize + 16, 'path');
         }
 
         for (let y = 0; y < mapHeight; y += 2) {
-            this.add.image(800, y * tileSize + 16, 'tree');
-            this.add.image(1120, y * tileSize + 16, 'tree');
+            this.add.image(GameConfig.WIDTH / 2 - 160, y * tileSize + 16, 'tree');
+            this.add.image(GameConfig.WIDTH / 2 + 160, y * tileSize + 16, 'tree');
         }
 
         for (let x = 0; x < mapWidth; x += 3) {
             for (let y = 0; y < mapHeight; y += 3) {
-                if (Math.abs(x * tileSize + 16 - 960) > 200) {
+                if (Math.abs(x * tileSize + 16 - GameConfig.WIDTH / 2) > 200) {
                     this.add.image(x * tileSize + 16, y * tileSize + 16, 'tree');
                 }
             }
@@ -83,12 +83,12 @@ class Forest extends Phaser.Scene {
 
         signs.forEach((sign, index) => {
             const y = yPositions[index] || 150 + index * 130;
-            const signSprite = this.add.image(960, y, 'sign');
+            const signSprite = this.add.image(GameConfig.WIDTH / 2, y, 'sign');
             signSprite.setInteractive({ useHandCursor: true });
             signSprite.setScale(1.5);
             signSprite.setDepth(5);
 
-            const label = this.add.text(960, y - 30, '[SIGN]', {
+            const label = this.add.text(GameConfig.WIDTH / 2, y - 30, '[SIGN]', {
                 fontSize: '10px',
                 fill: '#00ff00',
                 fontFamily: 'monospace'

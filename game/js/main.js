@@ -11,10 +11,14 @@ if (typeof Phaser === 'undefined') {
 
 const config = {
     type: Phaser.AUTO,
-    width: 1920,
-    height: 1080,
+    width: GameConfig.WIDTH,
+    height: GameConfig.HEIGHT,
     backgroundColor: '#0a0a0a',
-    parent: 'game',
+    parent: 'stage',
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
         default: 'arcade',
         arcade: {

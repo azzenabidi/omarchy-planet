@@ -261,6 +261,7 @@ def test_game_files_exist():
     base = Path(__file__).parent.parent / 'game'
     assert_true((base / 'index.html').exists())
     assert_true((base / 'js' / 'main.js').exists())
+    assert_true((base / 'js' / 'systems' / 'Config.js').exists())
     assert_true((base / 'js' / 'scenes' / 'Boot.js').exists())
     assert_true((base / 'js' / 'scenes' / 'Village.js').exists())
     assert_true((base / 'js' / 'scenes' / 'Forest.js').exists())
@@ -771,6 +772,79 @@ def test_runtime_write_refuses_symlink():
 
 
 # ============================================================
+# Bugfix: instance lifecycle races
+# ============================================================
+def test_looks_like_planet_matches_planet_processes():
+    """PID identity check recognizes planet.py argv."""
+    from toggle import looks_like_planet
+    assert_true(looks_like_planet(
+        b"/usr/bin/python3\0/home/u/.config/omarchy/plugins/omarchy-planet/planet.py\0"))
+    assert_true(looks_like_planet(b"planet.py\0"))
+    assert_true(looks_like_planet(b"/usr/bin/python3\0./planet.py\0"))
+
+
+def test_looks_like_planet_rejects_other_processes():
+    """PID identity check rejects recycled PIDs of unrelated processes."""
+    from toggle import looks_like_planet
+    assert_false(looks_like_planet(b""))
+    assert_false(looks_like_planet(b"/usr/bin/python3\0tests/test_planet.py\0"))
+    assert_false(looks_like_planet(b"/bin/bash\0--norc\0"))
+
+
+def test_cleanup_only_deletes_own_pid_file():
+    """planet.py must not erase a newer instance's state on late shutdown."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('_owns_pid_file', planet)
+
+
+def test_stop_uses_compare_and_delete():
+    """stop.py must re-check the pid file before clearing state."""
+    stop = (Path(__file__).parent.parent / 'stop.py').read_text()
+    assert_in('== pid_text', stop)
+
+
+# ============================================================
+# Bugfix: bridge payload validation
+# ============================================================
+def test_bridge_payload_must_be_dict():
+    """Non-object JSON payloads must be rejected before .get()."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('isinstance(payload, dict)', planet)
+
+
+# ============================================================
+# Bugfix: resolution independence
+# ============================================================
+def test_game_uses_fit_scaling():
+    """Canvas must scale to any monitor instead of assuming 1920x1080."""
+    main_js = (Path(__file__).parent.parent / 'game' / 'js' / 'main.js').read_text()
+    assert_in('Phaser.Scale.FIT', main_js)
+    assert_in("parent: 'stage'", main_js)
+
+
+def test_index_has_stage_and_config_loaded_first():
+    html = (Path(__file__).parent.parent / 'game' / 'index.html').read_text()
+    assert_in('id="stage"', html)
+    assert_true(html.index('systems/Config.js') < html.index('scenes/Boot.js'))
+
+
+def test_no_hardcoded_resolution_in_scenes_and_dialog():
+    """Scenes and dialog layout derive from GameConfig, not pixel literals."""
+    js_dir = Path(__file__).parent.parent / 'game' / 'js'
+    for f in list((js_dir / 'scenes').glob('*.js')) + [js_dir / 'systems' / 'Dialog.js']:
+        content = f.read_text()
+        assert_not_in('1920', content)
+        assert_not_in('1080', content)
+
+
+def test_output_size_detected_in_python():
+    """Window size comes from monitor geometry, with fallback."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('detect_output_size', planet)
+    assert_in('get_monitors', planet)
+
+
+# ============================================================
 # Run all tests
 # ============================================================
 if __name__ == '__main__':
@@ -888,6 +962,19 @@ if __name__ == '__main__':
     test("runtime dir is private", test_runtime_dir_is_private)
     test("runtime files owner-only", test_runtime_files_are_owner_only)
     test("runtime write refuses symlink", test_runtime_write_refuses_symlink)
+
+    print("\n--- Bugfix: Lifecycle Races ---")
+    test("pid identity matches planet", test_looks_like_planet_matches_planet_processes)
+    test("pid identity rejects others", test_looks_like_planet_rejects_other_processes)
+    test("cleanup guards pid file ownership", test_cleanup_only_deletes_own_pid_file)
+    test("stop uses compare-and-delete", test_stop_uses_compare_and_delete)
+    test("bridge payload must be dict", test_bridge_payload_must_be_dict)
+
+    print("\n--- Bugfix: Resolution Independence ---")
+    test("game uses fit scaling", test_game_uses_fit_scaling)
+    test("stage div + config first", test_index_has_stage_and_config_loaded_first)
+    test("no hardcoded resolution literals", test_no_hardcoded_resolution_in_scenes_and_dialog)
+    test("output size detected in python", test_output_size_detected_in_python)
 
     print(f"\n{'='*40}")
     print(f"{passed} passed, {failed} failed")

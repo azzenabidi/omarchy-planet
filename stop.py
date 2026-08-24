@@ -15,5 +15,8 @@ if pid_text is not None:
         os.kill(pid, 15)  # SIGTERM
     except (ValueError, ProcessLookupError, PermissionError):
         pass
-    unlink(PID_FILE)
-    unlink(VISIBLE_FILE)
+    # Compare-and-delete: only clear state if no newer instance has
+    # taken over the files meanwhile.
+    if read_text(PID_FILE) == pid_text:
+        unlink(PID_FILE)
+        unlink(VISIBLE_FILE)

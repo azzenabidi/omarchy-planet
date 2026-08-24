@@ -12,7 +12,7 @@ class Dialog {
         this.onAdvance = null;
 
         // Create terminal-style UI
-        this.container = scene.add.container(960, 880);
+        this.container = scene.add.container(GameConfig.WIDTH / 2, GameConfig.HEIGHT - 200);
         this.container.setDepth(100);
         this.container.setVisible(false);
 
@@ -85,7 +85,7 @@ class Dialog {
         this.textObj.setText(text);
         const textHeight = this.textObj.height;
         const boxHeight = Math.max(180, textHeight + 60);
-        this.container.y = 1080 - boxHeight / 2 - 20;
+        this.container.y = GameConfig.HEIGHT - boxHeight / 2 - 20;
 
         // Register click handler when dialog opens
         this.scene.input.on('pointerdown', this._boundAdvance);

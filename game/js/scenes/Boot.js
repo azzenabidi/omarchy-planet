@@ -32,7 +32,7 @@ class Boot extends Phaser.Scene {
         // Terminal-style welcome screen
         const bg = this.add.graphics();
         bg.fillStyle(0x000000, 0.95);
-        bg.fillRect(0, 0, 1920, 1080);
+        bg.fillRect(0, 0, GameConfig.WIDTH, GameConfig.HEIGHT);
 
         const lines = [
             { text: '> OMARCHY PLANET v1.0.0', y: 270, size: '24px', color: '#00ff00' },
@@ -56,14 +56,14 @@ class Boot extends Phaser.Scene {
         ];
 
         lines.forEach(line => {
-            this.add.text(960, line.y, line.text, {
+            this.add.text(GameConfig.WIDTH / 2, line.y, line.text, {
                 fontSize: line.size,
                 fill: line.color,
                 fontFamily: 'monospace'
             }).setOrigin(0.5);
         });
 
-        const beginText = this.add.text(960, 820,
+        const beginText = this.add.text(GameConfig.WIDTH / 2, 820,
             '> [ CLICK TO ENABLE SOUND ]', {
                 fontSize: '18px',
                 fill: '#ffff00',

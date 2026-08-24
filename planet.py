@@ -100,6 +100,19 @@ def action_command(action):
     return None
 
 
+def detect_output_size():
+    """Best-effort application-pixel size of the primary output."""
+    try:
+        display = Gdk.Display.get_default()
+        monitors = display.get_monitors()
+        geo = monitors.get_item(0).get_geometry()
+        if geo.width > 0 and geo.height > 0:
+            return geo.width, geo.height
+    except Exception:
+        pass
+    return (1920, 1080)
+
+
 def get_user_name():
     try:
         result = subprocess.run(
@@ -125,7 +138,8 @@ class PlanetApp:
 
     def on_activate(self, app):
         self.window = Gtk.ApplicationWindow(application=app)
-        self.window.set_default_size(1920, 1080)
+        width, height = detect_output_size()
+        self.window.set_default_size(width, height)
         self.window.set_decorated(False)
 
         LayerShell.init_for_window(self.window)
@@ -269,6 +283,9 @@ class PlanetApp:
         except Exception as e:
             dbg(f"PARSE-ERROR: {e!r}")
             return True
+        if not isinstance(payload, dict):
+            dbg(f"NON-DICT-PAYLOAD={payload!r}")
+            return True
         cmd = payload.get("command")
         dbg(f"CMD={cmd}")
         if cmd == "__probe":
@@ -308,9 +325,24 @@ class PlanetApp:
         self.app.connect('shutdown', lambda _: self.cleanup())
         self.app.run(sys.argv)
 
+    def _owns_pid_file(self):
+        """True when PID_FILE still refers to this instance.
+
+        Guards the shutdown race: an older instance exiting late must not
+        erase the pid/visible state written by a newer one.
+        """
+        pid_text = read_text(PID_FILE)
+        if pid_text is None:
+            return False
+        try:
+            return int(pid_text.strip()) == os.getpid()
+        except ValueError:
+            return False
+
     def cleanup(self):
-        unlink(PID_FILE)
-        unlink(VISIBLE_FILE)
+        if self._owns_pid_file():
+            unlink(PID_FILE)
+            unlink(VISIBLE_FILE)
 
 
 if __name__ == "__main__":

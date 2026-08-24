@@ -6,6 +6,7 @@
     <style>
         * { margin: 0; padding: 0; }
         body { background: transparent; overflow: hidden; }
+        #stage { position: fixed; inset: 0; }
         canvas { display: block; }
         #music-toggle {
             position: fixed;
@@ -24,6 +25,7 @@
     </style>
 </head>
 <body>
+    <div id="stage"></div>
     <button id="music-toggle">[ MUSIC: ON ]</button>
     <script>
         document.getElementById('music-toggle').addEventListener('click', function (e) {
@@ -40,6 +42,7 @@
     <script src="vendor/phaser-3.80.1.min.js"
             integrity="sha384-Fi7F0CYQBHYa+s2vvYJeiqvOQf3tuZ28vafRGXvMt7ijxNTVf3+eXPkNRIUi9JD2"
             crossorigin="anonymous"></script>
+    <script src="js/systems/Config.js"></script>
     <script src="js/systems/Bridge.js"></script>
     <script src="js/systems/Dialog.js"></script>
     <script src="js/systems/DialogData.js"></script>

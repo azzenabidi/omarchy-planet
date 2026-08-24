@@ -9,24 +9,24 @@ class SettingsCave extends Phaser.Scene {
         this.createNPCs();
         this.createPanelCrystals();
 
-        this.player = new Player(this, 960, 100);
+        this.player = new Player(this, GameConfig.WIDTH / 2, 100);
         this.dialog = new Dialog(this);
 
-        this.add.text(960, 30, '[ SETTINGS CAVE ]', {
+        this.add.text(GameConfig.WIDTH / 2, 30, '[ SETTINGS CAVE ]', {
             fontSize: '20px',
             fill: '#00ff00',
             fontFamily: 'monospace',
             fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(50);
 
-        this.add.text(960, 1050, '> Click crystals to open real panels | Click [VILLAGE] to return', {
+        this.add.text(GameConfig.WIDTH / 2, GameConfig.HEIGHT - 30, '> Click crystals to open real panels | Click [VILLAGE] to return', {
             fontSize: '12px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(50);
 
         // Return portal
-        const returnPortal = this.add.text(30, 540, '> [VILLAGE]', {
+        const returnPortal = this.add.text(30, GameConfig.HEIGHT / 2, '> [VILLAGE]', {
             fontSize: '14px',
             fill: '#ffff00',
             fontFamily: 'monospace',
@@ -62,9 +62,9 @@ class SettingsCave extends Phaser.Scene {
     }
 
     createMap() {
-        const tileSize = 32;
-        const mapWidth = 60;
-        const mapHeight = 34;
+        const tileSize = GameConfig.TILE;
+        const mapWidth = Math.ceil(GameConfig.WIDTH / tileSize);
+        const mapHeight = Math.ceil(GameConfig.HEIGHT / tileSize);
 
         for (let x = 0; x < mapWidth; x++) {
             for (let y = 0; y < mapHeight; y++) {
@@ -79,28 +79,28 @@ class SettingsCave extends Phaser.Scene {
 
         for (let x = 0; x < mapWidth; x++) {
             this.add.image(x * tileSize + 16, 0, 'cave');
-            this.add.image(x * tileSize + 16, 33 * tileSize + 16, 'cave');
+            this.add.image(x * tileSize + 16, (mapHeight - 1) * tileSize + 16, 'cave');
         }
         for (let y = 0; y < mapHeight; y++) {
             this.add.image(0, y * tileSize + 16, 'cave');
-            this.add.image(59 * tileSize + 16, y * tileSize + 16, 'cave');
+            this.add.image((mapWidth - 1) * tileSize + 16, y * tileSize + 16, 'cave');
         }
     }
 
     createPanelCrystals() {
-        this.add.text(960, 760, '> SYSTEM PANEL CRYSTALS - click to summon:', {
+        this.add.text(GameConfig.WIDTH / 2, 760, '> SYSTEM PANEL CRYSTALS - click to summon:', {
             fontSize: '11px',
             fill: '#00aa00',
             fontFamily: 'monospace'
         }).setOrigin(0.5).setDepth(20);
 
-        new DemoButton(this, 660, 810, '[ AUDIO ]', 'panel-audio',
+        new DemoButton(this, GameConfig.WIDTH / 2 - 300, 810, '[ AUDIO ]', 'panel-audio',
             'Summoning the Audio panel (Super+Ctrl+A)...', { fill: '#ff66ff' });
-        new DemoButton(this, 860, 810, '[ WIFI ]', 'panel-network',
+        new DemoButton(this, GameConfig.WIDTH / 2 - 100, 810, '[ WIFI ]', 'panel-network',
             'Summoning the Network panel (Super+Ctrl+W)...', { fill: '#66ccff' });
-        new DemoButton(this, 1070, 810, '[ BLUETOOTH ]', 'panel-bluetooth',
+        new DemoButton(this, GameConfig.WIDTH / 2 + 110, 810, '[ BLUETOOTH ]', 'panel-bluetooth',
             'Summoning the Bluetooth panel (Super+Ctrl+B)...', { fill: '#66aaff' });
-        new DemoButton(this, 1280, 810, '[ POWER ]', 'panel-power',
+        new DemoButton(this, GameConfig.WIDTH / 2 + 320, 810, '[ POWER ]', 'panel-power',
             'Summoning the Power panel (Super+Ctrl+P)...', { fill: '#ffaa44' });
     }
 
