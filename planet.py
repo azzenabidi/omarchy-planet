@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 """Omarchy Planet - GTK4+WebKitGTK layer-shell container."""
+import hashlib
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
+
+from runtime import append_line, read_text, runtime_dir, unlink, write_text
 
 import gi
 gi.require_version('Gtk', '4.0')
@@ -14,9 +17,38 @@ from gi.repository import Gtk, Gdk, WebKit, GLib
 from gi.repository import Gtk4LayerShell as LayerShell
 
 GAME_DIR = Path(__file__).resolve().parent / "game"
-PID_FILE = Path("/tmp/omarchy-planet.pid")
-VISIBLE_FILE = Path("/tmp/omarchy-planet-visible")
+# Private per-user runtime state (never world-writable /tmp).
+RUNTIME_DIR = runtime_dir()
+PID_FILE = RUNTIME_DIR / "planet.pid"
+VISIBLE_FILE = RUNTIME_DIR / "visible"
+DEBUG_LOG = RUNTIME_DIR / "debug.log"
+
+# Vendored game engine: exact bytes reviewed against the official npm
+# tarball for phaser@3.80.1 (sha256 below). The page enforces the same
+# bytes via SRI; here we refuse to start if they differ.
+PHASER_FILE = GAME_DIR / "vendor" / "phaser-3.80.1.min.js"
+PHASER_SHA256 = "62081f6a1b51d040473f919ffedef9009953c20833518e146da5a8d1c9405ea8"
+
 DEBUG = bool(os.getenv("OMARCHY_PLANET_DEBUG"))
+
+
+def debug_log(line):
+    """Append a line to the private debug log (only used in DEBUG mode)."""
+    if not DEBUG:
+        return
+    try:
+        append_line(DEBUG_LOG, line)
+    except OSError:
+        pass
+
+
+def verify_vendored_engine():
+    """Fail closed unless the vendored Phaser matches the reviewed bytes."""
+    digest = hashlib.sha256(PHASER_FILE.read_bytes()).hexdigest()
+    if digest != PHASER_SHA256:
+        raise RuntimeError(
+            f"vendored game engine failed integrity check: {PHASER_FILE}"
+        )
 
 # Allowlisted actions the web game may trigger on the real desktop.
 # Menus open via omarchy-menu routes, panels via omarchy-shell summon,
@@ -110,6 +142,16 @@ class PlanetApp:
         self.webview.set_hexpand(True)
 
         url = f"file://{GAME_DIR}/index.html"
+
+        # Fail closed: never expose the omarchy bridge to a page whose
+        # engine bytes we could not verify.
+        try:
+            verify_vendored_engine()
+        except Exception as e:
+            print(f"omarchy-planet: refusing to start: {e}", file=sys.stderr)
+            app.quit()
+            return
+
         self.webview.load_uri(url)
         self.window.set_child(self.webview)
 
@@ -133,10 +175,10 @@ class PlanetApp:
             ))
 
         # Write PID
-        PID_FILE.write_text(str(os.getpid()))
+        write_text(PID_FILE, str(os.getpid()))
 
         # Start visible (toggle hides it)
-        VISIBLE_FILE.write_text("yes")
+        write_text(VISIBLE_FILE, "yes")
 
         # Poll for toggle every 300ms
         GLib.timeout_add(300, self.poll)
@@ -149,13 +191,13 @@ class PlanetApp:
             out = val.to_string() if val else "null"
         except Exception as e:
             out = f"EXC {e!r}"
-        with open("/tmp/omarchy-planet-debug.log", "a") as f:
-            f.write(f"EVAL {out}\n")
+        try:
+            append_line(DEBUG_LOG, f"EVAL {out}")
+        except OSError:
+            pass
 
     def on_page_loaded(self, webview, event, user_name):
-        if DEBUG:
-            with open("/tmp/omarchy-planet-debug.log", "a") as f:
-                f.write(f"LOAD-EVENT={event}\n")
+        debug_log(f"LOAD-EVENT={event}")
         # WebKit.LoadEvent.FINISHED = 3
         if event == 3:
             js = f"window.userName = {json.dumps(user_name)};"
@@ -190,8 +232,9 @@ class PlanetApp:
                     GLib.timeout_add(2000 * i, tick, i)
 
     def poll(self):
-        if VISIBLE_FILE.exists():
-            sig = VISIBLE_FILE.read_text().strip()
+        sig = read_text(VISIBLE_FILE)
+        if sig is not None:
+            sig = sig.strip()
             if sig != self.last_sig:
                 self.last_sig = sig
                 self.toggle()
@@ -201,11 +244,11 @@ class PlanetApp:
         self.is_visible = not self.is_visible
         if self.is_visible:
             self.window.set_opacity(1.0)
-            VISIBLE_FILE.write_text("yes")
+            write_text(VISIBLE_FILE, "yes")
             self.exec_js("window.onPlanetActivate && window.onPlanetActivate()")
         else:
             self.window.set_opacity(0.0)
-            VISIBLE_FILE.write_text("no")
+            write_text(VISIBLE_FILE, "no")
             self.exec_js("window.onPlanetDeactivate && window.onPlanetDeactivate()")
 
     def exec_js(self, js):
@@ -215,9 +258,7 @@ class PlanetApp:
 
     def on_js_message(self, manager, value):
         def dbg(msg):
-            if DEBUG:
-                with open("/tmp/omarchy-planet-debug.log", "a") as f:
-                    f.write(msg + "\n")
+            debug_log(msg)
 
         try:
             raw = value.to_string()
@@ -253,9 +294,7 @@ class PlanetApp:
 
     def run_action(self, action):
         argv = action_command(action)
-        if DEBUG:
-            with open("/tmp/omarchy-planet-debug.log", "a") as f:
-                f.write(f"ACTION={action!r} argv={argv}\n")
+        debug_log(f"ACTION={action!r} argv={argv}")
         if not argv:
             print(f"Unknown action: {action}", flush=True)
             return
@@ -270,8 +309,8 @@ class PlanetApp:
         self.app.run(sys.argv)
 
     def cleanup(self):
-        PID_FILE.unlink(missing_ok=True)
-        VISIBLE_FILE.unlink(missing_ok=True)
+        unlink(PID_FILE)
+        unlink(VISIBLE_FILE)
 
 
 if __name__ == "__main__":

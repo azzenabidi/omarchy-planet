@@ -3,13 +3,15 @@
 import fcntl
 import os
 import subprocess
-import time
 from pathlib import Path
 
+from runtime import open_lock, read_text, runtime_dir, unlink, write_text
+
 PLANET_SCRIPT = Path(__file__).parent / "planet.py"
-PID_FILE = Path("/tmp/omarchy-planet.pid")
-VISIBLE_FILE = Path("/tmp/omarchy-planet-visible")
-LOCK_FILE = Path("/tmp/omarchy-planet.lock")
+RUNTIME_DIR = runtime_dir()
+PID_FILE = RUNTIME_DIR / "planet.pid"
+VISIBLE_FILE = RUNTIME_DIR / "visible"
+LOCK_FILE = RUNTIME_DIR / "toggle.lock"
 
 
 def is_running(pid):
@@ -34,41 +36,38 @@ def start():
 
 def main():
     # Use file lock to prevent race conditions
-    lock_fd = open(LOCK_FILE, 'w')
+    lock_fd = open_lock(LOCK_FILE)
     try:
         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except IOError:
         # Another toggle is in progress
+        os.close(lock_fd)
         return
 
     try:
-        if PID_FILE.exists():
+        pid_text = read_text(PID_FILE)
+        if pid_text is not None:
             try:
-                pid = int(PID_FILE.read_text().strip())
+                pid = int(pid_text.strip())
             except ValueError:
-                PID_FILE.unlink(missing_ok=True)
+                unlink(PID_FILE)
                 start()
                 return
 
             if is_running(pid):
                 # Toggle: write opposite of current state
-                current = "no"
-                if VISIBLE_FILE.exists():
-                    try:
-                        current = VISIBLE_FILE.read_text().strip()
-                    except Exception:
-                        pass
+                current = (read_text(VISIBLE_FILE) or "").strip() or "no"
 
                 new_state = "no" if current == "yes" else "yes"
-                VISIBLE_FILE.write_text(new_state)
+                write_text(VISIBLE_FILE, new_state)
                 return
             else:
-                PID_FILE.unlink(missing_ok=True)
+                unlink(PID_FILE)
 
         start()
     finally:
         fcntl.flock(lock_fd, fcntl.LOCK_UN)
-        lock_fd.close()
+        os.close(lock_fd)
 
 
 if __name__ == "__main__":

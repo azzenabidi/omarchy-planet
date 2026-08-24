@@ -111,9 +111,12 @@ omarchy-planet/
 ├── restart.sh         # Restart helper
 ├── install.sh         # Installation script
 ├── manifest.json      # Omarchy plugin manifest
+├── runtime.py         # Private 0700 runtime state helpers
 ├── assets/            # Screenshots and images
 ├── game/
 │   ├── index.html     # Phaser.js entry point
+│   ├── vendor/
+│   │   └── phaser-3.80.1.min.js  # Vendored engine (SRI-pinned)
 │   ├── data/
 │   │   └── dialog.csv # All NPC/sign dialog (editable!)
 │   └── js/
@@ -122,9 +125,25 @@ omarchy-planet/
 │       ├── entities/  # Player, NPC
 │       └── systems/   # Dialog, DialogData, Bridge, DemoButton, Chiptune
 └── tests/
-    └── test_planet.py # 50 tests
+    └── test_planet.py # Test suite
 ```
 
+## Security
+
+- **Vendored engine**: Phaser 3.80.1 is shipped in-repo (`game/vendor/`) — no
+  code is fetched from any CDN or network origin at runtime. The vendored
+  bytes were reviewed and cross-checked byte-for-byte against the official
+  npm registry tarball (`sha256 62081f6a…`).
+- **Enforced integrity**: `game/index.html` pins the engine with an SRI
+  `integrity="sha384-…"` attribute, so WebKit refuses execution if the file
+  is modified on disk.
+- **Fail closed**: `planet.py` re-verifies the engine hash before loading the
+  page and refuses to start on mismatch; `Bridge.js` and `main.js` refuse to
+  boot or post bridge messages unless the verified engine is actually loaded.
+  The desktop-action bridge can never be reached by unverified code.
+- **Private runtime state**: pid file, visibility flag, lock, and debug log
+  live in `$XDG_RUNTIME_DIR/omarchy-planet` (created `0700`, files `0600`,
+  opened `O_NOFOLLOW`) instead of predictable paths in world-writable `/tmp`.
 
 ## Requirements
 

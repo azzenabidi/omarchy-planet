@@ -1,4 +1,14 @@
 // Omarchy Planet - Phaser.js Game
+(function () {
+if (typeof Phaser === 'undefined') {
+    // Engine missing or blocked by integrity check: fail closed.
+    // Do not boot the game and do not expose any page-side wiring.
+    const btn = document.getElementById('music-toggle');
+    if (btn) btn.style.display = 'none';
+    console.error('[omarchy-planet] game engine unavailable; refusing to start');
+    return;
+}
+
 const config = {
     type: Phaser.AUTO,
     width: 1920,
@@ -44,3 +54,4 @@ window.onPlanetDeactivate = function() {
     }
     Chiptune.suspend();
 };
+})();

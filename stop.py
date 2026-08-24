@@ -1,15 +1,19 @@
 #!/usr/bin/python3
 """Stop Omarchy Planet."""
 import os
-from pathlib import Path
 
-PID_FILE = Path("/tmp/omarchy-planet.pid")
+from runtime import read_text, runtime_dir, unlink
 
-if PID_FILE.exists():
+RUNTIME_DIR = runtime_dir()
+PID_FILE = RUNTIME_DIR / "planet.pid"
+VISIBLE_FILE = RUNTIME_DIR / "visible"
+
+pid_text = read_text(PID_FILE)
+if pid_text is not None:
     try:
-        pid = int(PID_FILE.read_text().strip())
+        pid = int(pid_text.strip())
         os.kill(pid, 15)  # SIGTERM
     except (ValueError, ProcessLookupError, PermissionError):
         pass
-    PID_FILE.unlink(missing_ok=True)
-    Path("/tmp/omarchy-planet-visible").unlink(missing_ok=True)
+    unlink(PID_FILE)
+    unlink(VISIBLE_FILE)

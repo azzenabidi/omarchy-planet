@@ -10,6 +10,10 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+os.environ.setdefault(
+    "XDG_RUNTIME_DIR",
+    tempfile.mkdtemp(prefix="omarchy-planet-test-runtime-"),
+)
 from planet import get_user_name, PlanetApp
 from toggle import is_running, start, main as toggle_main
 
@@ -654,6 +658,119 @@ def test_stop_sends_sigterm():
 
 
 # ============================================================
+# Security: supply-chain (vendored engine, SRI, fail closed)
+# ============================================================
+def test_index_has_no_remote_scripts():
+    """The page must never execute code fetched from a remote origin."""
+    html = (Path(__file__).parent.parent / 'game' / 'index.html').read_text()
+    assert_not_in('cdn.jsdelivr.net', html)
+    assert_not_in('https://', html)
+    assert_not_in('http://', html)
+
+
+def test_vendored_engine_present_and_single():
+    """Exactly one vendored engine build is shipped."""
+    vendor = Path(__file__).parent.parent / 'game' / 'vendor'
+    files = sorted(vendor.glob('phaser-*.min.js'))
+    assert_eq(len(files), 1)
+    assert_true(files[0].stat().st_size > 1000000)
+
+
+def test_sri_integrity_matches_vendored_bytes():
+    """SRI in index.html must pin the exact vendored bytes."""
+    import base64
+    import hashlib
+    base = Path(__file__).parent.parent
+    engine = next((base / 'game' / 'vendor').glob('phaser-*.min.js'))
+    digest = 'sha384-' + base64.b64encode(
+        hashlib.sha384(engine.read_bytes()).digest()).decode()
+    html = (base / 'game' / 'index.html').read_text()
+    assert_in(f'integrity="{digest}"', html)
+    assert_in('crossorigin=', html)
+
+
+def test_planet_verifies_engine_fail_closed():
+    """planet.py must verify engine bytes before loading the page."""
+    planet = (Path(__file__).parent.parent / 'planet.py').read_text()
+    assert_in('verify_vendored_engine', planet)
+    assert_in(
+        '62081f6a1b51d040473f919ffedef9009953c20833518e146da5a8d1c9405ea8',
+        planet,
+    )
+    verify_idx = planet.index('verify_vendored_engine()')
+    load_idx = planet.index('load_uri')
+    assert_true(0 < verify_idx < load_idx)
+
+
+def test_bridge_fails_closed_without_engine():
+    """The desktop bridge must be dead unless the verified engine loaded."""
+    bridge = (
+        Path(__file__).parent.parent / 'game' / 'js' / 'systems' / 'Bridge.js'
+    ).read_text()
+    assert_in("typeof Phaser !== 'undefined'", bridge)
+    assert_in('!this.enabled', bridge)
+
+
+def test_main_fails_closed_without_engine():
+    """main.js must not boot anything when the engine is unavailable."""
+    main_js = (Path(__file__).parent.parent / 'game' / 'js' / 'main.js').read_text()
+    assert_in("typeof Phaser === 'undefined'", main_js)
+    assert_in('refusing to start', main_js)
+
+
+# ============================================================
+# Security: private runtime state (no predictable /tmp files)
+# ============================================================
+def test_no_tmp_paths_in_sources():
+    """No runtime state may live under world-writable /tmp."""
+    base = Path(__file__).parent.parent
+    for f in ['planet.py', 'toggle.py', 'stop.py', 'restart.sh']:
+        content = (base / f).read_text()
+        assert_not_in('/tmp/', content)
+        assert_not_in('/tmp"', content)
+
+
+def test_runtime_dir_is_private():
+    """Runtime directory exists, is owned by us and mode 0700."""
+    from runtime import runtime_dir
+    d = runtime_dir()
+    st = os.stat(d)
+    assert_eq(st.st_uid, os.getuid())
+    assert_eq(st.st_mode & 0o777, 0o700)
+
+
+def test_runtime_files_are_owner_only():
+    """Files created in the runtime dir are mode 0600."""
+    from runtime import read_text, runtime_dir, write_text
+    p = runtime_dir() / 'probe-mode.txt'
+    write_text(p, 'x')
+    try:
+        assert_eq(os.stat(p).st_mode & 0o777, 0o600)
+        assert_eq(read_text(p), 'x')
+    finally:
+        os.unlink(p)
+
+
+def test_runtime_write_refuses_symlink():
+    """Writes must follow planted symlinks (fail closed, target untouched)."""
+    from runtime import runtime_dir, write_text
+    outside = Path(tempfile.mkdtemp(prefix='omarchy-planet-outside-')) / 'victim.txt'
+    outside.write_text('original')
+    link = runtime_dir() / 'probe-link.txt'
+    os.symlink(outside, link)
+    try:
+        raised = False
+        try:
+            write_text(link, 'evil')
+        except OSError:
+            raised = True
+        assert_true(raised)
+        assert_eq(outside.read_text(), 'original')
+    finally:
+        os.unlink(link)
+
+
+# ============================================================
 # Run all tests
 # ============================================================
 if __name__ == '__main__':
@@ -757,6 +874,20 @@ if __name__ == '__main__':
 
     print("\n--- Stop.py Features ---")
     test("stop sends sigterm", test_stop_sends_sigterm)
+
+    print("\n--- Security: Supply Chain ---")
+    test("no remote scripts in index.html", test_index_has_no_remote_scripts)
+    test("vendored engine present", test_vendored_engine_present_and_single)
+    test("sri matches vendored bytes", test_sri_integrity_matches_vendored_bytes)
+    test("planet verifies engine fail-closed", test_planet_verifies_engine_fail_closed)
+    test("bridge fails closed without engine", test_bridge_fails_closed_without_engine)
+    test("main fails closed without engine", test_main_fails_closed_without_engine)
+
+    print("\n--- Security: Runtime State ---")
+    test("no /tmp paths in sources", test_no_tmp_paths_in_sources)
+    test("runtime dir is private", test_runtime_dir_is_private)
+    test("runtime files owner-only", test_runtime_files_are_owner_only)
+    test("runtime write refuses symlink", test_runtime_write_refuses_symlink)
 
     print(f"\n{'='*40}")
     print(f"{passed} passed, {failed} failed")
