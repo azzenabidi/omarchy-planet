@@ -37,11 +37,12 @@
     </script>
     <!-- Vendored phaser@3.80.1: exact bytes reviewed against the official
          npm tarball (sha256 62081f6a1b51d040473f919ffedef9009953c20833518e146da5a8d1c9405ea8).
-         SRI makes WebKit refuse to execute if the file is modified on disk;
-         no runtime network fetch is involved at all. -->
-    <script src="vendor/phaser-3.80.1.min.js"
-            integrity="sha384-Fi7F0CYQBHYa+s2vvYJeiqvOQf3tuZ28vafRGXvMt7ijxNTVf3+eXPkNRIUi9JD2"
-            crossorigin="anonymous"></script>
+         No network fetch happens at runtime. NOTE: no SRI/crossorigin here -
+         WebKitGTK refuses integrity-checked subresources on file:// pages
+         (opaque origin), which blocked the whole engine. Tamper enforcement
+         lives in planet.py instead: it re-hashes this exact file before
+         loading the page and refuses to start on mismatch. -->
+    <script src="vendor/phaser-3.80.1.min.js"></script>
     <script src="js/systems/Config.js"></script>
     <script src="js/systems/Bridge.js"></script>
     <script src="js/systems/Dialog.js"></script>

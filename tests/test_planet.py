@@ -677,17 +677,29 @@ def test_vendored_engine_present_and_single():
     assert_true(files[0].stat().st_size > 1000000)
 
 
-def test_sri_integrity_matches_vendored_bytes():
-    """SRI in index.html must pin the exact vendored bytes."""
-    import base64
+def test_index_loads_local_engine_without_sri_attrs():
+    """Engine must be loaded locally, with no integrity/crossorigin attrs.
+
+    WebKitGTK blocks integrity-checked subresources on file:// pages
+    (opaque origin), which silently kills the whole engine. Tamper
+    enforcement is done by planet.py's pre-launch hash check instead.
+    """
+    import re
+    html = (Path(__file__).parent.parent / 'game' / 'index.html').read_text()
+    assert_in('vendor/phaser-3.80.1.min.js', html)
+    for tag in re.findall(r'<script[^>]*>', html):
+        assert_not_in('integrity=', tag)
+        assert_not_in('crossorigin', tag)
+
+
+def test_vendor_bytes_match_launcher_pin():
+    """The shipped engine file must match the sha256 pinned in planet.py."""
     import hashlib
     base = Path(__file__).parent.parent
     engine = next((base / 'game' / 'vendor').glob('phaser-*.min.js'))
-    digest = 'sha384-' + base64.b64encode(
-        hashlib.sha384(engine.read_bytes()).digest()).decode()
-    html = (base / 'game' / 'index.html').read_text()
-    assert_in(f'integrity="{digest}"', html)
-    assert_in('crossorigin=', html)
+    digest = hashlib.sha256(engine.read_bytes()).hexdigest()
+    planet = (base / 'planet.py').read_text()
+    assert_in(digest, planet)
 
 
 def test_planet_verifies_engine_fail_closed():
@@ -952,7 +964,8 @@ if __name__ == '__main__':
     print("\n--- Security: Supply Chain ---")
     test("no remote scripts in index.html", test_index_has_no_remote_scripts)
     test("vendored engine present", test_vendored_engine_present_and_single)
-    test("sri matches vendored bytes", test_sri_integrity_matches_vendored_bytes)
+    test("engine local, no SRI attrs", test_index_loads_local_engine_without_sri_attrs)
+    test("vendor bytes match launcher pin", test_vendor_bytes_match_launcher_pin)
     test("planet verifies engine fail-closed", test_planet_verifies_engine_fail_closed)
     test("bridge fails closed without engine", test_bridge_fails_closed_without_engine)
     test("main fails closed without engine", test_main_fails_closed_without_engine)
