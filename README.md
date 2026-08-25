@@ -143,6 +143,10 @@ omarchy-planet/
 - **Private runtime state**: pid file, visibility flag, lock, and debug log
   live in `$XDG_RUNTIME_DIR/omarchy-planet` (created `0700`, files `0600`,
   opened `O_NOFOLLOW`) instead of predictable paths in world-writable `/tmp`.
+  The runtime directory itself is created atomically via a parent `dir_fd`
+  opened with `O_NOFOLLOW`, so a planted symlink at the target path is never
+  followed; after creation the path is `lstat`'d to confirm it is a real
+  directory before ownership and permission checks are applied.
 
 ## Requirements
 
