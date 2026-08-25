@@ -5,8 +5,12 @@ All mutable state (pid file, visibility flag, lock, debug log) lives in a
 per-user private directory instead of predictable paths in world-writable
 /tmp. The directory is created with mode 0700 and verified to be owned by
 the current user; every file is opened with O_NOFOLLOW so planted symlinks
-fail closed, and created with mode 0600.
+fail closed, and created with mode 0600. The directory path itself is
+never followed through a symlink: the parent is opened with O_NOFOLLOW
+and the directory is created atomically via dir_fd, then lstat'd to
+confirm it is not a symlink.
 """
+import errno
 import os
 from pathlib import Path
 
@@ -23,15 +27,67 @@ def _candidate_bases():
     yield Path(state_home)
 
 
+def _safe_parent_fd(path):
+    """Open the nearest existing ancestor of *path* that is a real directory.
+
+    Walks upward from *path* until an existing directory is found, then
+    opens it with O_DIRECTORY | O_NOFOLLOW so that a symlink at any
+    component is rejected with ENOTDIR.  Returns (parent_fd, remaining)
+    where *remaining* is the relative child path from the opened ancestor
+    to the original *path*.
+
+    Raises OSError (ENOENT / ENOTDIR) when no safe ancestor exists.
+    """
+    parts = []
+    cur = path
+    while True:
+        try:
+            fd = os.open(str(cur), os.O_DIRECTORY | _NOFOLLOW)
+            return fd, os.path.join(*parts) if parts else path.name
+        except OSError as e:
+            if e.errno in (errno.ENOENT, errno.ENOTDIR):
+                parts.append(cur.name)
+                cur = cur.parent
+                if cur == cur.parent:
+                    raise
+                continue
+            raise
+
+
 def runtime_dir():
-    """Create (if needed) and return the private 0700 runtime directory."""
+    """Create (if needed) and return the private 0700 runtime directory.
+
+    The path is never followed through a symlink: the parent directory is
+    opened with O_NOFOLLOW and the child is created atomically via
+    dir_fd.  The resulting path is lstat'd to confirm it is a real
+    directory and not a symlink.  Ownership and permission checks are
+    applied to the directory object itself.
+    """
     last_error = None
     for base in _candidate_bases():
         path = base / APP_ID
         try:
-            path.mkdir(parents=True, exist_ok=True)
-            os.chmod(path, 0o700)
-            st = os.stat(path)
+            parent_fd, child_name = _safe_parent_fd(path)
+            try:
+                os.mkdir(child_name, 0o700, dir_fd=parent_fd)
+            except FileExistsError:
+                os.close(parent_fd)
+                if os.path.islink(path):
+                    os.unlink(path)
+                    parent_fd, child_name = _safe_parent_fd(path)
+                    os.mkdir(child_name, 0o700, dir_fd=parent_fd)
+                    os.close(parent_fd)
+                else:
+                    pass  # real directory already exists
+            else:
+                os.close(parent_fd)
+
+            # Reject symlinks at the resolved path.
+            st = os.lstat(path)
+            if os.path.islink(path):
+                raise PermissionError(f"{path} is a symlink")
+            if not os.path.isdir(path):
+                raise PermissionError(f"{path} is not a directory")
             if st.st_uid != os.getuid():
                 raise PermissionError(f"{path} owned by uid {st.st_uid}, not {os.getuid()}")
             if st.st_mode & 0o077:
